@@ -1,0 +1,97 @@
+---
+// Campo de esferas infográficas que derivan/escalan con el scroll (GSAP ScrollTrigger).
+// Posiciones deterministas (definidas aquí) → SSR estable, sin layout shift.
+const spheres = [
+  { x: 12, y: 18, r: 46, color: 'var(--color-orange)', depth: 0.9, o: 0.95 },
+  { x: 78, y: 12, r: 28, color: 'var(--color-blue)', depth: 0.5, o: 0.85 },
+  { x: 60, y: 30, r: 70, color: 'var(--color-orange-deep)', depth: 1.2, o: 0.9 },
+  { x: 30, y: 48, r: 18, color: 'var(--color-green)', depth: 0.35, o: 0.8 },
+  { x: 88, y: 52, r: 38, color: 'var(--color-green)', depth: 0.7, o: 0.85 },
+  { x: 18, y: 70, r: 56, color: 'var(--color-blue)', depth: 1.0, o: 0.88 },
+  { x: 70, y: 78, r: 24, color: 'var(--color-orange)', depth: 0.45, o: 0.9 },
+  { x: 45, y: 85, r: 14, color: 'var(--color-ink)', depth: 0.3, o: 0.7 },
+  { x: 92, y: 88, r: 20, color: 'var(--color-orange)', depth: 0.55, o: 0.85 },
+  { x: 8, y: 40, r: 12, color: 'var(--color-ink)', depth: 0.25, o: 0.6 },
+  { x: 50, y: 60, r: 32, color: 'var(--color-green)', depth: 0.8, o: 0.5 },
+  { x: 38, y: 8, r: 16, color: 'var(--color-blue)', depth: 0.4, o: 0.75 },
+];
+---
+
+<div id="sphere-field" aria-hidden="true">
+  {
+    spheres.map((s) => (
+      <span
+        class="sphere"
+        data-depth={s.depth}
+        style={`left:${s.x}%;top:${s.y}%;width:${s.r * 2}px;height:${s.r * 2}px;background:${s.color};opacity:${s.o};`}
+      />
+    ))
+  }
+</div>
+
+<style>
+  #sphere-field {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .sphere {
+    position: absolute;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    will-change: transform;
+    /* sombreado sutil para sensación de esfera */
+    background-blend-mode: multiply;
+    box-shadow: inset -8px -10px 22px rgba(0, 0, 0, 0.18);
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  function initSpheres() {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+    const spheres = gsap.utils.toArray<HTMLElement>('.sphere');
+
+    spheres.forEach((el) => {
+      const depth = parseFloat(el.dataset.depth || '0.5');
+      // Parallax + deriva: cuanto mayor depth, más se mueve.
+      gsap.to(el, {
+        yPercent: -40 * depth,
+        xPercent: (depth > 0.7 ? 1 : -1) * 14 * depth,
+        scale: 1 + depth * 0.12,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: document.body,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 1,
+        },
+      });
+    });
+
+    // Flotación suave continua (independiente del scroll).
+    spheres.forEach((el, i) => {
+      gsap.to(el, {
+        y: '+=12',
+        duration: 3 + (i % 4),
+        repeat: -1,
+        yoyo: true,
+        ease: 'sine.inOut',
+        delay: i * 0.2,
+      });
+    });
+  }
+
+  // Compatibilidad con View Transitions: re-init en cada carga de página.
+  document.addEventListener('astro:page-load', () => {
+    ScrollTrigger.getAll().forEach((t) => t.kill());
+    initSpheres();
+  });
+</script>

@@ -1,0 +1,381 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SphereField from '../components/SphereField.astro';
+import TierStack from '../components/TierStack.astro';
+import Framework from '../components/Framework.astro';
+import { getContent } from '../lib/wp';
+
+const c = await getContent();
+---
+
+<BaseLayout>
+  <!-- HERO -->
+  <header class="hero auda-grid">
+    <SphereField />
+    <div class="hero-inner">
+      <a class="brand" href="/" aria-label="AUDA inicio">
+        <span class="brand-mark">
+          <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true">
+            <circle cx="22" cy="26" r="11" fill="var(--color-orange)" />
+            <path d="M40 15 L51 37 L29 37 Z" fill="var(--color-ink)" />
+            <rect x="14" y="44" width="36" height="6" rx="3" fill="var(--color-green)" />
+          </svg>
+        </span>
+        <span class="brand-word">AUDA</span>
+      </a>
+      <h1>{c.tagline}</h1>
+      <p class="lead">{c.intro}</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#servicios">Ver servicios</a>
+        <a class="btn btn-ghost" href={`mailto:${c.contact.email}`}>Hablar con AUDA</a>
+      </div>
+    </div>
+    <div class="scroll-hint" aria-hidden="true">scroll ↓</div>
+  </header>
+
+  <main>
+    <!-- QUÉ ES -->
+    <section class="band" id="que-es">
+      <div class="wrap narrow">
+        <span class="eyebrow">Qué es AUDA</span>
+        <h2>{c.about.heading}</h2>
+        {c.about.body.map((p) => <p class="body-lg">{p}</p>)}
+      </div>
+    </section>
+
+    <!-- SERVICIOS / TIERS -->
+    <section class="band band-alt" id="servicios">
+      <div class="wrap">
+        <span class="eyebrow">Servicios</span>
+        <h2>Cinco capas, una sola relación.</h2>
+        <p class="section-sub">
+          Entrada de baja fricción, recurrencia sólida, consultoría de alto valor. Ningún cliente
+          entra obligado a comprar las cinco: el flujo natural sube por sí solo si el trabajo es bueno.
+        </p>
+        <TierStack tiers={c.tiers} />
+      </div>
+    </section>
+
+    <!-- FRAMEWORK -->
+    <section class="band" id="framework">
+      <div class="wrap">
+        <span class="eyebrow">Metodología</span>
+        <h2>AUDA AI Readiness</h2>
+        <p class="section-sub">
+          No vendemos horas: vendemos un framework. Cinco fases, cada una un entregable nombrable y
+          repetible. En las primeras cuatro semanas el cliente recibe diagnóstico, roadmap y plan de
+          capacitación.
+        </p>
+        <Framework />
+      </div>
+    </section>
+
+    <!-- PARA QUIÉN -->
+    <section class="band band-alt" id="para-quien">
+      <div class="wrap">
+        <span class="eyebrow">Para quién</span>
+        <h2>Organizaciones con propósito.</h2>
+        <div class="vert-grid">
+          {
+            c.verticals.map((v) => (
+              <article class="vert-card">
+                <span class="tag">{v.tag}</span>
+                <h3>{v.title}</h3>
+                <p>{v.pain}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- EQUIPO -->
+    <section class="band" id="equipo">
+      <div class="wrap narrow">
+        <span class="eyebrow">Equipo</span>
+        <h2>Dos lados complementarios. Ninguno sobra.</h2>
+        <div class="team-grid">
+          {
+            c.team.map((m) => (
+              <article class="team-card">
+                <h3>{m.name}</h3>
+                <p class="role">{m.role}</p>
+                <p class="focus">{m.focus}</p>
+              </article>
+            ))
+          }
+        </div>
+        <p class="rule">
+          <strong>Regla de oro:</strong> Aura abre y cierra; Dan diagnostica y construye; ambos validan
+          en cada hito. Ningún cliente trabaja con uno solo de los dos.
+        </p>
+      </div>
+    </section>
+
+    <!-- CONTACTO -->
+    <section class="band band-dark" id="contacto">
+      <div class="wrap narrow">
+        <span class="eyebrow light">Contacto</span>
+        <h2 class="on-dark">Construyamos tu sistema de IA.</h2>
+        <p class="body-lg on-dark">
+          Una auditoría AI-first arranca con una conversación. Sin humo, sin caja negra.
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href={`mailto:${c.contact.email}`}>{c.contact.email}</a>
+          <a
+            class="btn btn-ghost on-dark"
+            href={`https://wa.me/${c.contact.whatsapp.replace(/[^0-9]/g, '')}`}>
+            WhatsApp {c.contact.whatsapp}
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-foot">
+    <span>AUDA · Estudio AI-first · Bogotá / Medellín</span>
+    <span>{c.contact.email}</span>
+  </footer>
+</BaseLayout>
+
+<style>
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 6vw 60px;
+    overflow: hidden;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 760px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    margin-bottom: 40px;
+  }
+  .brand-word {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 26px;
+    letter-spacing: 0.16em;
+    color: var(--color-ink);
+  }
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(38px, 6vw, 68px);
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+    margin: 0 0 22px;
+    color: var(--color-ink);
+  }
+  .lead {
+    font-size: clamp(17px, 2.2vw, 21px);
+    color: var(--color-ink-soft);
+    max-width: 620px;
+    margin: 0 0 32px;
+    line-height: 1.5;
+  }
+  .scroll-hint {
+    position: absolute;
+    bottom: 26px;
+    left: 6vw;
+    z-index: 2;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+
+  /* BANDS */
+  .band {
+    padding: clamp(64px, 10vw, 120px) 6vw;
+  }
+  .band-alt {
+    background: var(--color-paper-deep);
+  }
+  .band-dark {
+    background: var(--color-ink);
+  }
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+  }
+  .narrow {
+    max-width: 760px;
+  }
+  .eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-orange-deep);
+    margin-bottom: 14px;
+    font-weight: 600;
+  }
+  .eyebrow.light {
+    color: var(--color-orange);
+  }
+  h2 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.1;
+    margin: 0 0 16px;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+  }
+  .on-dark {
+    color: var(--color-paper);
+  }
+  .section-sub {
+    max-width: 640px;
+    color: var(--color-ink-soft);
+    font-size: 16px;
+    margin: 0 0 36px;
+    line-height: 1.55;
+  }
+  .body-lg {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--color-ink-soft);
+    margin: 0 0 16px;
+  }
+
+  /* VERTICALES */
+  .vert-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  .vert-card {
+    background: var(--color-paper);
+    border: 1px solid #fff;
+    padding: 22px;
+  }
+  .vert-card .tag {
+    display: inline-block;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    background: var(--color-orange);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 12px;
+  }
+  .vert-card h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+  }
+  .vert-card p {
+    margin: 0;
+    color: var(--color-ink-soft);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* EQUIPO */
+  .team-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 28px 0 24px;
+  }
+  .team-card {
+    background: #fff;
+    border: 1px solid var(--color-paper-deep);
+    border-top: 4px solid var(--color-blue);
+    padding: 22px;
+  }
+  .team-card h3 {
+    margin: 0 0 4px;
+    font-size: 19px;
+  }
+  .team-card .role {
+    margin: 0 0 10px;
+    font-size: 13px;
+    color: var(--color-orange-deep);
+    font-weight: 600;
+  }
+  .team-card .focus {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-ink-soft);
+    line-height: 1.5;
+  }
+  .rule {
+    font-size: 15px;
+    color: var(--color-ink-soft);
+    border-left: 3px solid var(--color-orange);
+    padding-left: 16px;
+    line-height: 1.55;
+  }
+  .rule strong {
+    color: var(--color-ink);
+  }
+
+  /* CTA */
+  .cta-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 13px 24px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      background 0.2s ease;
+  }
+  .btn:hover {
+    transform: translateY(-2px);
+  }
+  .btn-primary {
+    background: var(--color-orange);
+    color: #fff;
+  }
+  .btn-primary:hover {
+    background: var(--color-orange-deep);
+  }
+  .btn-ghost {
+    border: 1.5px solid var(--color-ink);
+    color: var(--color-ink);
+  }
+  .btn-ghost.on-dark {
+    border-color: var(--color-paper);
+    color: var(--color-paper);
+  }
+
+  /* FOOTER */
+  .site-foot {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 28px 6vw;
+    background: var(--color-ink);
+    color: var(--color-mute);
+    font-size: 13px;
+    border-top: 1px solid #3a3a36;
+  }
+
+  @media (max-width: 720px) {
+    .vert-grid,
+    .team-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

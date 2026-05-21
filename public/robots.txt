@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Landings ocultas (fase 2): no indexar
+Disallow: /campanas/
+Disallow: /lp/
+
+Sitemap: https://auda.lat/sitemap-index.xml

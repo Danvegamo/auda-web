@@ -1,0 +1,72 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import LoadingBar from '../components/LoadingBar.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = 'AUDA — Estudio AI-first para organizaciones con propósito',
+  description = 'AUDA vuelve AI-first a universidades, fundaciones y empresas con propósito: auditoría, implementación e infraestructura de inteligencia artificial embebida en sus procesos.',
+  noindex = false,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'AUDA',
+  url: 'https://auda.lat',
+  description,
+  email: 'hola@auda.lat',
+  areaServed: 'CO',
+  knowsLanguage: ['es'],
+  makesOffer: [
+    { '@type': 'Offer', name: 'Identidad visual + sitio web' },
+    { '@type': 'Offer', name: 'Hosting, mantenimiento y soporte' },
+    { '@type': 'Offer', name: 'Auditoría AI-first (framework AUDA AI Readiness)' },
+    { '@type': 'Offer', name: 'Implementación de IA vertical' },
+    { '@type': 'Offer', name: 'AI Ops Retainer' },
+  ],
+};
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex,nofollow" />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="es_CO" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(orgSchema)} />
+
+    <ClientRouter />
+  </head>
+  <body>
+    <LoadingBar />
+    <slot />
+  </body>
+</html>

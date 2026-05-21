@@ -1,0 +1,67 @@
+---
+// Línea de carga horizontal entre páginas (View Transitions de Astro).
+// Se anima en astro:before-preparation y se completa en astro:page-load.
+---
+
+<div id="auda-loadbar" aria-hidden="true"></div>
+
+<style>
+  #auda-loadbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left center;
+    background: linear-gradient(
+      90deg,
+      var(--color-orange),
+      var(--color-green) 55%,
+      var(--color-blue)
+    );
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+  }
+  #auda-loadbar.loading {
+    opacity: 1;
+    transform: scaleX(0.85);
+    transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  #auda-loadbar.done {
+    opacity: 1;
+    transform: scaleX(1);
+    transition: transform 0.2s ease-out;
+  }
+  #auda-loadbar.hide {
+    opacity: 0;
+    transition: opacity 0.3s ease-out 0.1s;
+  }
+</style>
+
+<script>
+  function bar() {
+    return document.getElementById('auda-loadbar');
+  }
+
+  document.addEventListener('astro:before-preparation', () => {
+    const b = bar();
+    if (!b) return;
+    b.classList.remove('done', 'hide');
+    // reflow para reiniciar la transición
+    void b.offsetWidth;
+    b.classList.add('loading');
+  });
+
+  document.addEventListener('astro:page-load', () => {
+    const b = bar();
+    if (!b || !b.classList.contains('loading')) return;
+    b.classList.remove('loading');
+    b.classList.add('done');
+    window.setTimeout(() => {
+      b.classList.add('hide');
+      window.setTimeout(() => b.classList.remove('done', 'hide'), 400);
+    }, 150);
+  });
+</script>

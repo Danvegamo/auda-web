@@ -1,0 +1,108 @@
+---
+// Framework AUDA AI Readiness — R1→R5 como infografía de nodos conectados.
+const phases = [
+  { id: 'R1', name: 'Read', desc: 'Diagnóstico organizacional: procesos, dolor, datos, madurez.' },
+  { id: 'R2', name: 'Rank', desc: 'Priorización por ROI: 5–8 oportunidades de IA con quick-wins.' },
+  { id: 'R3', name: 'Roadmap', desc: 'Plan a 12 meses: cronograma, capacitación, presupuesto, KPIs.' },
+  { id: 'R4', name: 'Run', desc: 'Implementación embebida: IA operando, equipo entrenado.' },
+  { id: 'R5', name: 'Refine', desc: 'Mejora continua: iteraciones, nuevos casos, monitoreo.' },
+];
+---
+
+<ol class="framework">
+  {
+    phases.map((p, i) => (
+      <li class="phase" style={`--i:${i}`}>
+        <span class="dot">{p.id}</span>
+        <h4>{p.name}</h4>
+        <p>{p.desc}</p>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .framework {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    position: relative;
+  }
+  .framework::before {
+    content: '';
+    position: absolute;
+    top: 22px;
+    left: 8%;
+    right: 8%;
+    height: 2px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--color-mute) 0 8px,
+      transparent 8px 16px
+    );
+    z-index: 0;
+  }
+  .phase {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+  .dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--color-ink);
+    color: var(--color-paper);
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(43, 43, 43, 0.2);
+  }
+  .phase:nth-child(1) .dot { background: var(--color-orange); }
+  .phase:nth-child(2) .dot { background: var(--color-orange-deep); }
+  .phase:nth-child(3) .dot { background: var(--color-green); }
+  .phase:nth-child(4) .dot { background: var(--color-blue); }
+  .phase:nth-child(5) .dot { background: var(--color-ink); }
+  .phase h4 {
+    margin: 0 0 6px;
+    font-size: 16px;
+    font-family: var(--font-serif);
+  }
+  .phase p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--color-ink-soft);
+    line-height: 1.45;
+  }
+  @media (max-width: 720px) {
+    .framework {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .framework::before {
+      display: none;
+    }
+    .phase {
+      display: grid;
+      grid-template-columns: 46px 1fr;
+      gap: 14px;
+      text-align: left;
+      align-items: start;
+    }
+    .dot {
+      margin-bottom: 0;
+    }
+    .phase h4 {
+      grid-column: 2;
+    }
+    .phase p {
+      grid-column: 2;
+    }
+  }
+</style>

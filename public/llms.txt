@@ -1,0 +1,40 @@
+# AUDA
+
+> Estudio B2B AI-first para organizaciones con propósito (universidades, fundaciones y empresas B-corp) en Colombia. Entra mediante auditorías estratégicas y deja sistemas de inteligencia artificial operando dentro de los procesos del cliente, con un modelo forward-deployed.
+
+## Qué hace AUDA
+
+AUDA combina diagnóstico organizacional, diseño e ingeniería de IA embebida. No vende herramientas ni horas: entra como ingeniero embebido durante un sprint corto, deja la IA funcionando dentro del flujo de trabajo y la sostiene con mejora continua.
+
+## Servicios (cinco tiers)
+
+- Tier 0 — Identidad visual + sitio web institucional.
+- Tier 1 — Hosting, mantenimiento y soporte (suscripción mensual).
+- Tier 2 — Auditoría AI-first con el framework AUDA AI Readiness (diagnóstico, mapeo de oportunidades, priorización por ROI, roadmap a 12 meses).
+- Tier 3 — Implementación de IA vertical (RAG sobre documentación, asistentes, automatización de reportes, integraciones con CRM/contabilidad/correo).
+- Tier 4 — AI Ops Retainer (mejora continua del sistema instalado).
+
+## Framework AUDA AI Readiness (R1–R5)
+
+- R1 Read — Diagnóstico organizacional.
+- R2 Rank — Priorización de oportunidades de IA por ROI.
+- R3 Roadmap — Plan a 12 meses con capacitación, presupuesto y KPIs.
+- R4 Run — Implementación embebida.
+- R5 Refine — Mejora continua.
+
+## Para quién
+
+- Universidades privadas (educación superior).
+- Fundaciones medianas con cooperación internacional (punto dulce).
+- Empresas B-corp / con propósito.
+
+## Equipo
+
+- Dan (David Vega) — solution architect y forward-deployed builder: ejecución técnica, IA, dev, infraestructura, datos.
+- Aura — strategy lead y project manager: gestión empresarial, diseño, estrategia, relación con el cliente.
+
+## Contacto
+
+- Email: hola@auda.lat
+- Sitio: https://auda.lat
+- Ubicación: Bogotá / Medellín, Colombia

@@ -1,0 +1,87 @@
+---
+interface Tier {
+  n: string;
+  title: string;
+  body: string;
+  accent: 'orange' | 'green' | 'blue' | 'ink';
+}
+interface Props {
+  tiers: Tier[];
+}
+const { tiers } = Astro.props;
+const accentVar: Record<Tier['accent'], string> = {
+  orange: 'var(--color-orange)',
+  green: 'var(--color-green)',
+  blue: 'var(--color-blue)',
+  ink: 'var(--color-ink)',
+};
+---
+
+<div class="tier-stack">
+  {
+    tiers.map((t) => (
+      <article class="tier" style={`--accent:${accentVar[t.accent]}`}>
+        <div class="tier-num">{t.n}</div>
+        <div class="tier-body">
+          <h3>{t.title}</h3>
+          <p>{t.body}</p>
+        </div>
+      </article>
+    ))
+  }
+</div>
+
+<style>
+  .tier-stack {
+    display: grid;
+    gap: 14px;
+  }
+  .tier {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    align-items: stretch;
+    background: #fff;
+    border: 1px solid var(--color-paper-deep);
+    border-left: 5px solid var(--accent);
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+  .tier:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(43, 43, 43, 0.1);
+  }
+  .tier-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 40px;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+  }
+  .tier-body {
+    padding: 18px 22px;
+  }
+  .tier-body h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+  }
+  .tier-body p {
+    margin: 0;
+    color: var(--color-ink-soft);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  @media (max-width: 640px) {
+    .tier {
+      grid-template-columns: 60px 1fr;
+    }
+    .tier-num {
+      font-size: 28px;
+    }
+  }
+</style>
