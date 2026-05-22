@@ -384,7 +384,8 @@ const wa = c.contact.whatsapp.replace(/[^0-9]/g, '');
     font-weight: 600;
     font-size: clamp(30px, 4.5vw, 52px);
     line-height: 1.08;
-    margin: 0 0 20px;
+    padding-bottom: 0.1em; /* evita que se corten los descendentes */
+    margin: 0 0 32px;
     letter-spacing: -0.02em;
     color: var(--color-ink-deep);
   }
