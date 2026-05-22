@@ -1,0 +1,242 @@
+---
+// Plano cartesiano del modelo de servicios (Momento C).
+// Eje X = Complejidad Técnica · Eje Y = Impacto Organizacional.
+// Pin + paneo horizontal en scroll. Esferas ∝ volumen del ticket.
+interface Tier {
+  n: string;
+  title: string;
+  body: string;
+  accent: 'orange' | 'green' | 'blue' | 'ink';
+}
+interface Props {
+  tiers: Tier[];
+}
+const { tiers } = Astro.props;
+
+const colorMap: Record<Tier['accent'], string> = {
+  orange: 'var(--color-orange)',
+  green: 'var(--color-green)',
+  blue: 'var(--color-blue)',
+  ink: 'var(--color-ink)',
+};
+
+// posición (x: complejidad 0-100, y: impacto 0-100) + radio (∝ ticket)
+const layout = [
+  { x: 14, y: 52, r: 52 },  // T0 identidad/web — entrada
+  { x: 24, y: 30, r: 40 },  // T1 hosting/soporte — recurrencia baja
+  { x: 50, y: 74, r: 70 },  // T2 auditoría — hook de alto impacto
+  { x: 82, y: 86, r: 96 },  // T3 implementación — ticket grande
+  { x: 70, y: 60, r: 58 },  // T4 retainer — recurrencia alta
+];
+const data = tiers.map((t, i) => ({ ...t, ...layout[i], color: colorMap[t.accent] }));
+---
+
+<div class="plane-viewport" id="tier-plane">
+  <div class="plane-track">
+    <div class="plane auda-lines">
+      <!-- ejes -->
+      <div class="axis axis-x"><span class="axis-label">Complejidad técnica →</span></div>
+      <div class="axis axis-y"><span class="axis-label">Impacto organizacional →</span></div>
+
+      {
+        data.map((t) => (
+          <button
+            class="node"
+            data-n={t.n}
+            style={`left:${t.x}%;bottom:${t.y}%;--r:${t.r}px;--c:${t.color};`}
+            aria-label={`Tier ${t.n}: ${t.title}`}
+          >
+            <span class="thread" />
+            <span class="ball" />
+            <span class="node-card">
+              <span class="node-n">Tier {t.n}</span>
+              <span class="node-title">{t.title}</span>
+              <span class="node-body">{t.body}</span>
+            </span>
+          </button>
+        ))
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .plane-viewport {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 32px;
+  }
+  .plane-track {
+    will-change: transform;
+  }
+  .plane {
+    position: relative;
+    width: 168vw;
+    max-width: 1700px;
+    height: min(72vh, 620px);
+    border-left: 1px solid rgba(43, 43, 43, 0.35);
+    border-bottom: 1px solid rgba(43, 43, 43, 0.35);
+  }
+  .axis-label {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-soft);
+    white-space: nowrap;
+  }
+  .axis-x .axis-label { bottom: -22px; right: 0; }
+  .axis-y .axis-label {
+    top: 0; left: -10px;
+    transform-origin: left top;
+    transform: rotate(90deg) translateY(-100%);
+  }
+
+  .node {
+    position: absolute;
+    transform: translate(-50%, 50%);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  .thread {
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    width: 1px;
+    height: 60vh;
+    background: linear-gradient(to top, rgba(43,43,43,0.45), transparent);
+    transform-origin: bottom;
+    transform: scaleY(0);
+  }
+  .ball {
+    display: block;
+    width: var(--r);
+    height: var(--r);
+    border-radius: 50%;
+    background: var(--c);
+    box-shadow: inset -6px -8px 18px rgba(0, 0, 0, 0.18);
+    transform: scale(0);
+    transition: transform 0.25s ease;
+  }
+  .node:hover .ball { transform: scale(1.06); }
+
+  .node-card {
+    position: absolute;
+    left: 50%;
+    top: calc(50% + var(--r) * 0.55);
+    transform: translateX(-50%);
+    width: 220px;
+    background: var(--color-paper-soft);
+    border: 1px solid var(--color-line);
+    padding: 12px 14px;
+    text-align: left;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 5;
+  }
+  .node:hover .node-card { opacity: 1; }
+  .node-n {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--c);
+    margin-bottom: 4px;
+  }
+  .node-title {
+    display: block;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--color-ink);
+    margin-bottom: 6px;
+  }
+  .node-body {
+    display: block;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--color-text-soft);
+  }
+
+  @media (max-width: 720px) {
+    .plane { width: 220vw; height: 60vh; }
+    .node-card { width: 180px; }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { dryClick } from '../scripts/audio';
+
+  function initPlane() {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const viewport = document.getElementById('tier-plane');
+    if (!viewport) return;
+    const track = viewport.querySelector<HTMLElement>('.plane-track');
+    const plane = viewport.querySelector<HTMLElement>('.plane');
+    const balls = gsap.utils.toArray<HTMLElement>('.node .ball');
+    const threads = gsap.utils.toArray<HTMLElement>('.node .thread');
+    if (!track || !plane) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    if (reduce) {
+      gsap.set(balls, { scale: 1 });
+      gsap.set(threads, { scaleY: 1 });
+      return;
+    }
+
+    // hilos caen + esferas crecen al entrar
+    ScrollTrigger.create({
+      trigger: viewport,
+      start: 'top 75%',
+      once: true,
+      onEnter: () => {
+        gsap.to(threads, { scaleY: 1, duration: 0.7, ease: 'power2.out', stagger: 0.08 });
+        gsap.to(balls, {
+          scale: 1, duration: 0.9, ease: 'elastic.out(1, 0.55)', stagger: 0.1, delay: 0.2,
+        });
+      },
+    });
+
+    // paneo horizontal: pin + traslación de la pista mientras hacemos scroll
+    const overflow = () => plane.scrollWidth - viewport.clientWidth;
+    if (overflow() > 20) {
+      gsap.to(track, {
+        x: () => -overflow(),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: viewport,
+          start: 'center center',
+          end: () => `+=${overflow() + window.innerHeight * 0.6}`,
+          pin: true,
+          scrub: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+    }
+
+    // hover: vibración del hilo + click seco
+    viewport.querySelectorAll<HTMLElement>('.node').forEach((node) => {
+      const thread = node.querySelector<HTMLElement>('.thread');
+      node.addEventListener('mouseenter', () => {
+        dryClick();
+        if (thread) gsap.fromTo(thread, { x: -1.5 }, { x: 1.5, duration: 0.05, repeat: 5, yoyo: true, onComplete: () => gsap.set(thread, { x: 0 }) });
+      });
+    });
+  }
+
+  let done = false;
+  function boot() {
+    if (done) return;
+    done = true;
+    initPlane();
+  }
+  document.addEventListener('astro:page-load', boot);
+</script>

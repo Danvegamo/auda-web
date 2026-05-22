@@ -89,9 +89,10 @@ const spheres = [
     });
   }
 
-  // Compatibilidad con View Transitions: re-init en cada carga de página.
+  let done = false;
   document.addEventListener('astro:page-load', () => {
-    ScrollTrigger.getAll().forEach((t) => t.kill());
+    if (done) return;
+    done = true;
     initSpheres();
   });
 </script>

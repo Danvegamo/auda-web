@@ -2,22 +2,19 @@
 ---
 
 <div id="loader" aria-hidden="true">
-  <div class="l-grid"></div>
+  <div class="l-grid auda-lines"></div>
   <div class="l-content">
-    <div class="l-logo">
-      <span class="l-char">A</span>
-      <span class="l-char">U</span>
-      <span class="l-char">D</span>
-      <span class="l-char">A</span>
+    <div class="l-counter"><span id="l-pct">001</span></div>
+    <div class="l-line-wrap">
+      <div class="l-line"></div>
     </div>
-    <div class="l-sub">Estudio AI-first</div>
-    <div class="l-bar-wrap">
-      <div class="l-bar"></div>
+    <div class="l-sub">AUDA · Estudio AI-first</div>
+
+    <div class="l-gate">
+      <button id="l-enter-sound" class="l-enter" type="button">[ ACTIVAR ENTORNO ACÚSTICO ]</button>
+      <button id="l-enter-mute" class="l-enter l-enter-mute" type="button">entrar en silencio</button>
     </div>
-    <div class="l-counter"><span id="l-pct">0</span><span class="l-percent">%</span></div>
   </div>
-  <div class="l-panel l-panel-top"></div>
-  <div class="l-panel l-panel-bot"></div>
 </div>
 
 <style>
@@ -25,7 +22,7 @@
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: #0a0a0a;
+    background: var(--color-paper);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -34,8 +31,6 @@
   .l-grid {
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(circle, rgba(232, 130, 90, 0.12) 1px, transparent 1px);
-    background-size: 60px 60px;
     opacity: 0;
   }
   .l-content {
@@ -45,155 +40,145 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 22px;
   }
-  .l-logo {
-    display: flex;
-    gap: 6px;
+  .l-counter {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    font-size: clamp(72px, 14vw, 150px);
+    line-height: 1;
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
   }
-  .l-char {
-    font-family: "Fraunces", Georgia, serif;
-    font-size: clamp(64px, 12vw, 120px);
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    color: #f0ece4;
-    transform: translateY(30px);
-    opacity: 0;
-    display: inline-block;
-  }
-  .l-sub {
-    font-family: "Inter", system-ui, sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.35em;
-    text-transform: uppercase;
-    color: #e8825a;
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  .l-bar-wrap {
-    width: 200px;
+  .l-line-wrap {
+    width: min(420px, 70vw);
     height: 1px;
-    background: rgba(255,255,255,0.08);
+    background: rgba(43, 43, 43, 0.12);
     position: relative;
     overflow: hidden;
   }
-  .l-bar {
+  .l-line {
     position: absolute;
     inset: 0;
-    background: #e8825a;
+    background: var(--color-ink);
     transform-origin: left;
     transform: scaleX(0);
   }
-  .l-counter {
-    font-family: "JetBrains Mono", "Fira Code", monospace;
-    font-size: 11px;
-    color: rgba(240,236,228,0.4);
-    letter-spacing: 0.1em;
+  .l-sub {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--color-text-soft);
     opacity: 0;
   }
-  .l-percent { margin-left: 1px; }
-
-  /* split panels */
-  .l-panel {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 50%;
-    background: #0a0a0a;
-    z-index: 3;
-    transform: scaleY(0);
+  .l-gate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    opacity: 0;
+    pointer-events: none;
   }
-  .l-panel-top {
-    top: 0;
-    transform-origin: top;
+  .l-gate.ready { pointer-events: auto; }
+  .l-enter {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    color: var(--color-orange);
+    padding: 6px 4px;
+    transition: color 0.2s, letter-spacing 0.3s;
   }
-  .l-panel-bot {
-    bottom: 0;
-    transform-origin: bottom;
+  .l-enter:hover { letter-spacing: 0.24em; }
+  .l-enter-mute {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: lowercase;
+    color: var(--color-text-soft);
   }
+  .l-enter-mute:hover { color: var(--color-ink); }
 </style>
 
 <script>
   import { gsap } from 'gsap';
+  import { startAmbient, dryClick } from '../scripts/audio';
 
   function runLoader() {
     const loader = document.getElementById('loader');
     if (!loader) return;
+    loader.style.display = 'flex';
 
-    const chars = loader.querySelectorAll<HTMLElement>('.l-char');
     const grid = loader.querySelector<HTMLElement>('.l-grid');
+    const line = loader.querySelector<HTMLElement>('.l-line');
     const sub = loader.querySelector<HTMLElement>('.l-sub');
-    const bar = loader.querySelector<HTMLElement>('.l-bar');
-    const counter = loader.querySelector<HTMLElement>('.l-counter');
+    const gate = loader.querySelector<HTMLElement>('.l-gate');
     const pct = document.getElementById('l-pct');
-    const panelTop = loader.querySelector<HTMLElement>('.l-panel-top');
-    const panelBot = loader.querySelector<HTMLElement>('.l-panel-bot');
+    const btnSound = document.getElementById('l-enter-sound');
+    const btnMute = document.getElementById('l-enter-mute');
 
-    const tl = gsap.timeline({
-      onComplete: () => {
-        loader.style.display = 'none';
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function reveal(withSound: boolean) {
+      if (withSound) {
+        startAmbient();
+        dryClick();
       }
-    });
+      gsap.to(loader, {
+        opacity: 0,
+        duration: 0.6,
+        ease: 'power2.inOut',
+        onComplete: () => { loader!.style.display = 'none'; },
+      });
+      document.documentElement.dataset.entered = 'true';
+    }
 
-    // fade in grid
+    btnSound?.addEventListener('click', () => reveal(true), { once: true });
+    btnMute?.addEventListener('click', () => reveal(false), { once: true });
+
+    if (reduce) {
+      gsap.set([sub, gate], { opacity: 1 });
+      gate?.classList.add('ready');
+      if (pct) pct.textContent = '100';
+      return;
+    }
+
+    const tl = gsap.timeline();
     tl.to(grid, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0);
 
-    // chars drop in staggered
-    tl.to(chars, {
-      y: 0,
-      opacity: 1,
-      duration: 0.7,
-      ease: 'power3.out',
-      stagger: 0.08,
-    }, 0.1);
-
-    // sub + counter appear
-    tl.to([sub, counter], {
-      opacity: 1,
-      y: 0,
-      duration: 0.5,
-      ease: 'power2.out',
-      stagger: 0.1,
-    }, 0.5);
-
-    // bar + counter animate together
-    tl.to(bar, {
-      scaleX: 1,
-      duration: 1.4,
-      ease: 'power2.inOut',
-    }, 0.6);
-
-    // counter count up
-    const obj = { val: 0 };
+    // contador 001 → 100
+    const obj = { val: 1 };
     tl.to(obj, {
       val: 100,
-      duration: 1.4,
-      ease: 'power2.inOut',
+      duration: 1.6,
+      ease: 'expo.out',
       onUpdate: () => {
-        if (pct) pct.textContent = Math.round(obj.val).toString();
+        if (pct) pct.textContent = String(Math.round(obj.val)).padStart(3, '0');
       },
-    }, 0.6);
+    }, 0.1);
 
-    // hold briefly
-    tl.to({}, { duration: 0.2 });
+    // línea avanza con aceleración asimétrica
+    tl.to(line, { scaleX: 1, duration: 1.6, ease: 'expo.out' }, 0.1);
 
-    // split reveal — panels slide out
-    tl.to(panelTop, { scaleY: 1, duration: 0, ease: 'none' });
-    tl.to(panelBot, { scaleY: 1, duration: 0, ease: 'none' });
-    tl.to([grid, chars, sub, bar, counter?.parentElement, counter],
-      { opacity: 0, duration: 0.15 }, '<');
-    tl.to(panelTop, {
-      scaleY: 0,
-      duration: 0.6,
-      ease: 'power4.inOut',
-    }, '+=0.05');
-    tl.to(panelBot, {
-      scaleY: 0,
-      duration: 0.6,
-      ease: 'power4.inOut',
-    }, '<');
+    // parpadeo seco del contador al llegar a 100
+    tl.to(pct, { opacity: 0.2, duration: 0.05, repeat: 3, yoyo: true }, '>-0.1');
+
+    // sub + puerta acústica
+    tl.to(sub, { opacity: 1, duration: 0.5, ease: 'power2.out' }, '>');
+    tl.to(gate, { opacity: 1, duration: 0.5, ease: 'power2.out',
+      onStart: () => gate?.classList.add('ready') }, '<+0.1');
   }
 
-  document.addEventListener('astro:page-load', runLoader);
-  runLoader();
+  let booted = false;
+  function boot() {
+    if (booted) return;
+    booted = true;
+    runLoader();
+  }
+  document.addEventListener('astro:page-load', boot);
+  boot();
 </script>

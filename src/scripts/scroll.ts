@@ -86,6 +86,30 @@ function initReveal() {
   });
 }
 
+function initType() {
+  // data-reveal="type" — efecto máquina de escribir: cada carácter aparece de izq→der
+  gsap.utils.toArray<HTMLElement>('[data-reveal="type"]').forEach((el) => {
+    const text = el.textContent ?? '';
+    el.innerHTML = text
+      .split('')
+      .map((ch) => (ch === ' ' ? '<span class="tc">&nbsp;</span>' : `<span class="tc">${ch}</span>`))
+      .join('');
+    const chars = el.querySelectorAll<HTMLElement>('.tc');
+    gsap.set(el, { opacity: 1 });
+    gsap.from(chars, {
+      opacity: 0,
+      duration: 0.01,
+      stagger: 0.035,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: el,
+        start: 'top 85%',
+        toggleActions: 'play none none none',
+      },
+    });
+  });
+}
+
 function initDrawLine() {
   gsap.utils.toArray<SVGPathElement>('[data-draw]').forEach((path) => {
     const length = path.getTotalLength();
@@ -103,22 +127,17 @@ function initDrawLine() {
   });
 }
 
-function destroyAll() {
-  ScrollTrigger.getAll().forEach((t) => t.kill());
-  lenis?.destroy();
-  lenis = null;
-}
-
 function init() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   initLenis();
+  initType();
   initReveal();
   initDrawLine();
 }
 
+let booted = false;
 document.addEventListener('astro:page-load', () => {
-  destroyAll();
+  if (booted) return;
+  booted = true;
   init();
 });
-
-init();

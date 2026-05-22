@@ -13,7 +13,7 @@ const accentVar: Record<Tier['accent'], string> = {
   orange: 'var(--color-accent)',
   green: 'var(--color-green)',
   blue: 'var(--color-blue)',
-  ink: 'rgba(240,236,228,0.4)',
+  ink: 'var(--color-ink)',
 };
 ---
 
@@ -61,7 +61,7 @@ const accentVar: Record<Tier['accent'], string> = {
     transition: transform 0.35s ease;
   }
   .tier:hover {
-    background: #161616;
+    background: #fff;
   }
   .tier:hover::before {
     transform: scaleY(1);

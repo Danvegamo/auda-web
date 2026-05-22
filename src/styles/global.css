@@ -1,16 +1,27 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0a0a0a;
-  --color-surface: #111111;
-  --color-line: #1e1e1e;
-  --color-accent: #e8825a;
-  --color-accent-deep: #d06a44;
-  --color-text: #f0ece4;
-  --color-text-soft: #9a9590;
-  --color-mute: #3a3a36;
-  --color-green: #5c7c5a;
-  --color-blue: #3e5c76;
+  /* Paper / analog environment ------------------------------------ */
+  --color-paper: #ede6d6;       /* fondo principal — papel de alto gramaje */
+  --color-paper-soft: #f4eee1;  /* papel claro para tarjetas/superficies */
+  --color-ink: #2b2b2b;         /* carbón orgánico — texto e interfaz */
+  --color-ink-deep: #161616;    /* tinta densa — titulares fuertes */
+
+  /* Acentos -------------------------------------------------------- */
+  --color-orange: #e8825a;      /* terracota — nodos activos / variables críticas */
+  --color-orange-deep: #d06a44;
+  --color-green: #5c7c5a;       /* verde técnico — datos secundarios */
+  --color-blue: #3e5c76;        /* azul técnico — flujos de metodología */
+
+  /* Aliases semánticos (compat con componentes) -------------------- */
+  --color-bg: var(--color-paper);
+  --color-surface: var(--color-paper-soft);
+  --color-line: rgba(43, 43, 43, 0.12);
+  --color-accent: var(--color-orange);
+  --color-accent-deep: var(--color-orange-deep);
+  --color-text: var(--color-ink);
+  --color-text-soft: rgba(43, 43, 43, 0.62);
+  --color-mute: rgba(43, 43, 43, 0.38);
 
   --font-serif: "Fraunces", Georgia, serif;
   --font-sans: "Inter", system-ui, sans-serif;
@@ -18,38 +29,41 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+  /* tono tinta para las líneas del plano de ingeniería */
+  --grid-line: rgba(43, 43, 43, 0.05);
+  --grid-size: 44px;
 }
 
 html {
-  background: var(--color-bg);
+  background: var(--color-paper);
   overflow-x: hidden;
 }
 
 body {
   margin: 0;
   font-family: var(--font-sans);
-  color: var(--color-text);
-  background: var(--color-bg);
+  color: var(--color-ink);
+  background: var(--color-paper);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
-/* dot grid — puntos en intersecciones */
-.auda-grid {
-  background-image: radial-gradient(circle, rgba(232, 130, 90, 0.18) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
-
-/* line grid — líneas finas */
+/* Plano de ingeniería — cuadrícula matemática 44px sobre papel */
 .auda-lines {
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 60px 60px;
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
 }
 
-/* revelado de texto — líneas y elementos */
+/* Cuadrícula de puntos en las intersecciones (tinta tenue) */
+.auda-grid {
+  background-image: radial-gradient(circle, rgba(43, 43, 43, 0.14) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+}
+
+/* revelado de texto / elementos */
 [data-reveal] {
   opacity: 0;
 }
