@@ -1,0 +1,123 @@
+---
+---
+
+<canvas id="dot-field" aria-hidden="true"></canvas>
+
+<style>
+  #dot-field {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+</style>
+
+<script>
+  function initDotField() {
+    const canvas = document.getElementById('dot-field') as HTMLCanvasElement | null;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if ('ontouchstart' in window) return; // off on touch/mobile
+
+    const SPACING = 50;
+    const DOT_R = 1.5;
+    const INFLUENCE = 120;
+    const MAX_OFFSET = 18;
+
+    let cols = 0, rows = 0;
+    let mouse = { x: -999, y: -999 };
+    let scrollY = 0;
+    let raf: number;
+
+    type Dot = { bx: number; by: number; ox: number; oy: number };
+    let dots: Dot[] = [];
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      cols = Math.ceil(rect.width / SPACING) + 1;
+      rows = Math.ceil(rect.height / SPACING) + 1;
+      dots = [];
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          dots.push({ bx: c * SPACING, by: r * SPACING, ox: 0, oy: 0 });
+        }
+      }
+    }
+
+    function draw(ts: number) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const wave = Math.sin(ts * 0.0004) * 0.5 + 0.5; // 0..1
+
+      for (const d of dots) {
+        const dx = d.bx - mouse.x;
+        const dy = d.by - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const norm = Math.max(0, 1 - dist / INFLUENCE);
+        d.ox += ((dx / (dist + 1)) * norm * MAX_OFFSET - d.ox) * 0.15;
+        d.oy += ((dy / (dist + 1)) * norm * MAX_OFFSET - d.oy) * 0.15;
+
+        const x = d.bx + d.ox;
+        const y = d.by + d.oy;
+
+        // wave opacity based on vertical position + time
+        const waveVal = Math.sin((d.by + scrollY * 0.3) * 0.04 + ts * 0.001);
+        const alpha = 0.15 + norm * 0.6 + waveVal * 0.08 * wave;
+
+        ctx.beginPath();
+        ctx.arc(x, y, DOT_R + norm * 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(232, 130, 90, ${Math.min(1, Math.max(0, alpha))})`;
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(draw);
+    }
+
+    function onMouse(e: MouseEvent) {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+    }
+
+    function onScroll() {
+      scrollY = window.scrollY;
+    }
+
+    function onLeave() {
+      mouse.x = -999;
+      mouse.y = -999;
+    }
+
+    resize();
+    window.addEventListener('resize', resize, { passive: true });
+    window.addEventListener('mousemove', onMouse, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('mouseleave', onLeave);
+    raf = requestAnimationFrame(draw);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', onMouse);
+      window.removeEventListener('scroll', onScroll);
+      document.removeEventListener('mouseleave', onLeave);
+    };
+  }
+
+  let cleanup: (() => void) | undefined;
+
+  document.addEventListener('astro:page-load', () => {
+    cleanup?.();
+    cleanup = initDotField() ?? undefined;
+  });
+
+  cleanup = initDotField() ?? undefined;
+</script>

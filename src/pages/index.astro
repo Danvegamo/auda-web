@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SphereField from '../components/SphereField.astro';
+import DotField from '../components/DotField.astro';
 import TierStack from '../components/TierStack.astro';
 import Framework from '../components/Framework.astro';
 import { getContent } from '../lib/wp';
@@ -10,72 +10,109 @@ const c = await getContent();
 
 <BaseLayout>
   <!-- HERO -->
-  <header class="hero auda-grid">
-    <SphereField />
-    <div class="hero-inner">
+  <header class="hero auda-lines">
+    <DotField />
+    <nav class="nav">
       <a class="brand" href="/" aria-label="AUDA inicio">
-        <span class="brand-mark">
-          <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true">
-            <circle cx="22" cy="26" r="11" fill="var(--color-orange)" />
-            <path d="M40 15 L51 37 L29 37 Z" fill="var(--color-ink)" />
-            <rect x="14" y="44" width="36" height="6" rx="3" fill="var(--color-green)" />
-          </svg>
-        </span>
+        <svg viewBox="0 0 64 64" width="32" height="32" aria-hidden="true">
+          <circle cx="22" cy="26" r="11" fill="var(--color-accent)" />
+          <path d="M40 15 L51 37 L29 37 Z" fill="var(--color-text)" />
+          <rect x="14" y="44" width="36" height="6" rx="3" fill="var(--color-green)" />
+        </svg>
         <span class="brand-word">AUDA</span>
       </a>
-      <h1>{c.tagline}</h1>
-      <p class="lead">{c.intro}</p>
-      <div class="cta-row">
+      <div class="nav-links">
+        <a href="#servicios">Servicios</a>
+        <a href="#framework">Metodología</a>
+        <a href="#contacto" class="nav-cta">Contactar</a>
+      </div>
+    </nav>
+
+    <div class="hero-inner">
+      <div class="hero-eyebrow" data-reveal="up">
+        <span class="dot-accent"></span>
+        Estudio AI-first · Bogotá / Medellín
+      </div>
+      <h1 data-reveal="line">{c.tagline}</h1>
+      <p class="lead" data-reveal="up">{c.intro}</p>
+      <div class="cta-row" data-reveal="up">
         <a class="btn btn-primary" href="#servicios">Ver servicios</a>
         <a class="btn btn-ghost" href={`mailto:${c.contact.email}`}>Hablar con AUDA</a>
       </div>
     </div>
-    <div class="scroll-hint" aria-hidden="true">scroll ↓</div>
+
+    <div class="hero-foot">
+      <div class="scroll-hint" aria-hidden="true">
+        <span class="sh-line"></span>
+        <span class="sh-label">scroll</span>
+      </div>
+      <div class="hero-coord" aria-hidden="true">4.7110° N / 74.0721° W</div>
+    </div>
   </header>
 
   <main>
     <!-- QUÉ ES -->
     <section class="band" id="que-es">
       <div class="wrap narrow">
-        <span class="eyebrow">Qué es AUDA</span>
-        <h2>{c.about.heading}</h2>
-        {c.about.body.map((p) => <p class="body-lg">{p}</p>)}
+        <span class="eyebrow" data-reveal="up">Qué es AUDA</span>
+        <h2 data-reveal="line">{c.about.heading}</h2>
+        {c.about.body.map((p) => <p class="body-lg" data-reveal="up">{p}</p>)}
       </div>
     </section>
 
+    <!-- DIVISOR -->
+    <div class="divider" aria-hidden="true">
+      <svg viewBox="0 0 1200 2" preserveAspectRatio="none">
+        <line x1="0" y1="1" x2="1200" y2="1" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+      </svg>
+    </div>
+
     <!-- SERVICIOS / TIERS -->
-    <section class="band band-alt" id="servicios">
+    <section class="band" id="servicios">
       <div class="wrap">
-        <span class="eyebrow">Servicios</span>
-        <h2>Cinco capas, una sola relación.</h2>
-        <p class="section-sub">
-          Entrada de baja fricción, recurrencia sólida, consultoría de alto valor. Ningún cliente
-          entra obligado a comprar las cinco: el flujo natural sube por sí solo si el trabajo es bueno.
+        <span class="eyebrow" data-reveal="up">Servicios</span>
+        <h2 data-reveal="line">Cinco capas, una sola relación.</h2>
+        <p class="section-sub" data-reveal="up">
+          Entrada de baja fricción, recurrencia sólida, consultoría de alto valor. El flujo
+          natural sube por sí solo si el trabajo es bueno.
         </p>
         <TierStack tiers={c.tiers} />
       </div>
     </section>
 
+    <!-- DIVISOR -->
+    <div class="divider" aria-hidden="true">
+      <svg viewBox="0 0 1200 2" preserveAspectRatio="none">
+        <line x1="0" y1="1" x2="1200" y2="1" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+      </svg>
+    </div>
+
     <!-- FRAMEWORK -->
     <section class="band" id="framework">
       <div class="wrap">
-        <span class="eyebrow">Metodología</span>
-        <h2>AUDA AI Readiness</h2>
-        <p class="section-sub">
-          No vendemos horas: vendemos un framework. Cinco fases, cada una un entregable nombrable y
-          repetible. En las primeras cuatro semanas el cliente recibe diagnóstico, roadmap y plan de
-          capacitación.
+        <span class="eyebrow" data-reveal="up">Metodología</span>
+        <h2 data-reveal="line">AUDA AI Readiness</h2>
+        <p class="section-sub" data-reveal="up">
+          No vendemos horas: vendemos un framework. Cinco fases, cada una un entregable nombrable
+          y repetible. En cuatro semanas: diagnóstico, roadmap y plan de capacitación.
         </p>
         <Framework />
       </div>
     </section>
 
+    <!-- DIVISOR -->
+    <div class="divider" aria-hidden="true">
+      <svg viewBox="0 0 1200 2" preserveAspectRatio="none">
+        <line x1="0" y1="1" x2="1200" y2="1" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+      </svg>
+    </div>
+
     <!-- PARA QUIÉN -->
-    <section class="band band-alt" id="para-quien">
+    <section class="band" id="para-quien">
       <div class="wrap">
-        <span class="eyebrow">Para quién</span>
-        <h2>Organizaciones con propósito.</h2>
-        <div class="vert-grid">
+        <span class="eyebrow" data-reveal="up">Para quién</span>
+        <h2 data-reveal="line">Organizaciones con propósito.</h2>
+        <div class="vert-grid" data-reveal="stagger">
           {
             c.verticals.map((v) => (
               <article class="vert-card">
@@ -89,15 +126,23 @@ const c = await getContent();
       </div>
     </section>
 
+    <!-- DIVISOR -->
+    <div class="divider" aria-hidden="true">
+      <svg viewBox="0 0 1200 2" preserveAspectRatio="none">
+        <line x1="0" y1="1" x2="1200" y2="1" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+      </svg>
+    </div>
+
     <!-- EQUIPO -->
     <section class="band" id="equipo">
       <div class="wrap narrow">
-        <span class="eyebrow">Equipo</span>
-        <h2>Dos lados complementarios. Ninguno sobra.</h2>
-        <div class="team-grid">
+        <span class="eyebrow" data-reveal="up">Equipo</span>
+        <h2 data-reveal="line">Dos lados complementarios. Ninguno sobra.</h2>
+        <div class="team-grid" data-reveal="stagger">
           {
             c.team.map((m) => (
               <article class="team-card">
+                <div class="team-accent"></div>
                 <h3>{m.name}</h3>
                 <p class="role">{m.role}</p>
                 <p class="focus">{m.focus}</p>
@@ -105,27 +150,27 @@ const c = await getContent();
             ))
           }
         </div>
-        <p class="rule">
-          <strong>Regla de oro:</strong> Aura abre y cierra; Dan diagnostica y construye; ambos validan
-          en cada hito. Ningún cliente trabaja con uno solo de los dos.
+        <p class="rule" data-reveal="up">
+          <strong>Regla de oro:</strong> Aura abre y cierra; Dan diagnostica y construye; ambos
+          validan en cada hito. Ningún cliente trabaja con uno solo de los dos.
         </p>
       </div>
     </section>
 
     <!-- CONTACTO -->
-    <section class="band band-dark" id="contacto">
+    <section class="band band-accent auda-grid" id="contacto">
       <div class="wrap narrow">
-        <span class="eyebrow light">Contacto</span>
-        <h2 class="on-dark">Construyamos tu sistema de IA.</h2>
-        <p class="body-lg on-dark">
+        <span class="eyebrow accent-eye" data-reveal="up">Contacto</span>
+        <h2 class="on-accent" data-reveal="line">Construyamos tu sistema de IA.</h2>
+        <p class="body-lg on-accent" data-reveal="up">
           Una auditoría AI-first arranca con una conversación. Sin humo, sin caja negra.
         </p>
-        <div class="cta-row">
-          <a class="btn btn-primary" href={`mailto:${c.contact.email}`}>{c.contact.email}</a>
+        <div class="cta-row" data-reveal="up">
+          <a class="btn btn-inv" href={`mailto:${c.contact.email}`}>{c.contact.email}</a>
           <a
-            class="btn btn-ghost on-dark"
+            class="btn btn-ghost-inv"
             href={`https://wa.me/${c.contact.whatsapp.replace(/[^0-9]/g, '')}`}>
-            WhatsApp {c.contact.whatsapp}
+            WhatsApp
           </a>
         </div>
       </div>
@@ -139,6 +184,55 @@ const c = await getContent();
 </BaseLayout>
 
 <style>
+  /* NAV */
+  .nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 6vw;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .brand-word {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.2em;
+    color: var(--color-text);
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+  .nav-links a {
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--color-text-soft);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--color-text); }
+  .nav-cta {
+    padding: 8px 18px;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--color-text) !important;
+    transition: border-color 0.2s, background 0.2s !important;
+  }
+  .nav-cta:hover {
+    border-color: var(--color-accent) !important;
+    background: rgba(232,130,90,0.08);
+  }
+
   /* HERO */
   .hero {
     position: relative;
@@ -146,64 +240,90 @@ const c = await getContent();
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 80px 6vw 60px;
+    padding: 120px 6vw 80px;
     overflow: hidden;
   }
   .hero-inner {
     position: relative;
     z-index: 2;
-    max-width: 760px;
+    max-width: 820px;
   }
-  .brand {
-    display: inline-flex;
+  .hero-eyebrow {
+    display: flex;
     align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    margin-bottom: 40px;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-text-soft);
+    margin-bottom: 28px;
   }
-  .brand-word {
-    font-family: var(--font-serif);
-    font-weight: 700;
-    font-size: 26px;
-    letter-spacing: 0.16em;
-    color: var(--color-ink);
+  .dot-accent {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    flex-shrink: 0;
   }
   .hero h1 {
     font-family: var(--font-serif);
     font-weight: 600;
-    font-size: clamp(38px, 6vw, 68px);
-    line-height: 1.04;
-    letter-spacing: -0.02em;
-    margin: 0 0 22px;
-    color: var(--color-ink);
+    font-size: clamp(40px, 6.5vw, 80px);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    margin: 0 0 24px;
+    color: var(--color-text);
   }
   .lead {
-    font-size: clamp(17px, 2.2vw, 21px);
-    color: var(--color-ink-soft);
-    max-width: 620px;
-    margin: 0 0 32px;
-    line-height: 1.5;
+    font-size: clamp(16px, 2vw, 19px);
+    color: var(--color-text-soft);
+    max-width: 580px;
+    margin: 0 0 36px;
+    line-height: 1.6;
+  }
+  .hero-foot {
+    position: absolute;
+    bottom: 36px;
+    left: 6vw;
+    right: 6vw;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
   .scroll-hint {
-    position: absolute;
-    bottom: 26px;
-    left: 6vw;
-    z-index: 2;
-    font-size: 13px;
-    letter-spacing: 0.2em;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .sh-line {
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--color-accent);
+    animation: sh-pulse 2s ease-in-out infinite;
+  }
+  @keyframes sh-pulse {
+    0%, 100% { opacity: 0.3; transform: scaleX(0.6); transform-origin: left; }
+    50% { opacity: 1; transform: scaleX(1); }
+  }
+  .sh-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--color-mute);
+    color: var(--color-text-soft);
+  }
+  .hero-coord {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(240,236,228,0.2);
+    letter-spacing: 0.08em;
   }
 
   /* BANDS */
   .band {
-    padding: clamp(64px, 10vw, 120px) 6vw;
-  }
-  .band-alt {
-    background: var(--color-paper-deep);
-  }
-  .band-dark {
-    background: var(--color-ink);
+    padding: clamp(80px, 12vw, 140px) 6vw;
   }
   .wrap {
     max-width: 1040px;
@@ -212,41 +332,55 @@ const c = await getContent();
   .narrow {
     max-width: 760px;
   }
+  .divider {
+    padding: 0 6vw;
+  }
+  .divider svg {
+    width: 100%;
+    height: 1px;
+    display: block;
+  }
   .eyebrow {
-    display: inline-block;
-    font-size: 12px;
-    letter-spacing: 0.2em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--color-orange-deep);
-    margin-bottom: 14px;
+    color: var(--color-accent);
+    margin-bottom: 20px;
     font-weight: 600;
+    font-family: var(--font-mono);
   }
-  .eyebrow.light {
-    color: var(--color-orange);
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 1px;
+    background: currentColor;
   }
+  .accent-eye { color: rgba(10,10,10,0.5); }
   h2 {
     font-family: var(--font-serif);
     font-weight: 600;
-    font-size: clamp(28px, 4vw, 44px);
-    line-height: 1.1;
-    margin: 0 0 16px;
-    letter-spacing: -0.01em;
-    color: var(--color-ink);
+    font-size: clamp(30px, 4.5vw, 52px);
+    line-height: 1.06;
+    margin: 0 0 20px;
+    letter-spacing: -0.02em;
+    color: var(--color-text);
   }
-  .on-dark {
-    color: var(--color-paper);
-  }
+  .on-accent { color: #0a0a0a; }
   .section-sub {
-    max-width: 640px;
-    color: var(--color-ink-soft);
-    font-size: 16px;
-    margin: 0 0 36px;
-    line-height: 1.55;
+    max-width: 600px;
+    color: var(--color-text-soft);
+    font-size: 15px;
+    margin: 0 0 40px;
+    line-height: 1.65;
   }
   .body-lg {
-    font-size: 18px;
-    line-height: 1.6;
-    color: var(--color-ink-soft);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--color-text-soft);
     margin: 0 0 16px;
   }
 
@@ -254,110 +388,149 @@ const c = await getContent();
   .vert-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 18px;
+    gap: 1px;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+    margin-top: 40px;
   }
   .vert-card {
-    background: var(--color-paper);
-    border: 1px solid #fff;
-    padding: 22px;
+    background: var(--color-surface);
+    padding: 28px 24px;
+    transition: background 0.25s ease;
+  }
+  .vert-card:hover {
+    background: #161616;
   }
   .vert-card .tag {
     display: inline-block;
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    background: var(--color-orange);
-    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--color-accent);
+    border: 1px solid rgba(232,130,90,0.3);
     padding: 3px 10px;
-    border-radius: 999px;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
   .vert-card h3 {
-    margin: 0 0 8px;
-    font-size: 18px;
+    margin: 0 0 10px;
+    font-size: 17px;
+    color: var(--color-text);
+    font-family: var(--font-serif);
   }
   .vert-card p {
     margin: 0;
-    color: var(--color-ink-soft);
-    font-size: 14px;
-    line-height: 1.5;
+    color: var(--color-text-soft);
+    font-size: 13px;
+    line-height: 1.6;
   }
 
   /* EQUIPO */
   .team-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    margin: 28px 0 24px;
+    gap: 1px;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+    margin: 32px 0 28px;
   }
   .team-card {
-    background: #fff;
-    border: 1px solid var(--color-paper-deep);
-    border-top: 4px solid var(--color-blue);
-    padding: 22px;
+    background: var(--color-surface);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s ease;
+  }
+  .team-card:hover {
+    background: #161616;
+  }
+  .team-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-blue));
   }
   .team-card h3 {
-    margin: 0 0 4px;
-    font-size: 19px;
+    margin: 0 0 6px;
+    font-size: 18px;
+    color: var(--color-text);
   }
   .team-card .role {
-    margin: 0 0 10px;
-    font-size: 13px;
-    color: var(--color-orange-deep);
+    margin: 0 0 12px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-accent);
     font-weight: 600;
+    font-family: var(--font-mono);
   }
   .team-card .focus {
     margin: 0;
     font-size: 14px;
-    color: var(--color-ink-soft);
-    line-height: 1.5;
+    color: var(--color-text-soft);
+    line-height: 1.6;
   }
   .rule {
-    font-size: 15px;
-    color: var(--color-ink-soft);
-    border-left: 3px solid var(--color-orange);
-    padding-left: 16px;
-    line-height: 1.55;
+    font-size: 14px;
+    color: var(--color-text-soft);
+    border-left: 2px solid var(--color-accent);
+    padding-left: 18px;
+    line-height: 1.65;
+    margin: 0;
   }
   .rule strong {
-    color: var(--color-ink);
+    color: var(--color-text);
   }
+
+  /* CONTACTO */
+  .band-accent {
+    background: var(--color-accent);
+  }
+  .band-accent .eyebrow::before {
+    background: rgba(10,10,10,0.4);
+  }
+  .band-accent h2 { color: #0a0a0a; }
+  .band-accent .body-lg { color: rgba(10,10,10,0.65); }
 
   /* CTA */
   .cta-row {
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
+    margin-top: 8px;
   }
   .btn {
     display: inline-flex;
     align-items: center;
-    padding: 13px 24px;
-    border-radius: 999px;
+    padding: 12px 24px;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 14px;
     text-decoration: none;
-    transition:
-      transform 0.2s ease,
-      background 0.2s ease;
+    letter-spacing: 0.04em;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
   }
-  .btn:hover {
-    transform: translateY(-2px);
-  }
+  .btn:hover { transform: translateY(-2px); }
   .btn-primary {
-    background: var(--color-orange);
-    color: #fff;
+    background: var(--color-accent);
+    color: #0a0a0a;
   }
-  .btn-primary:hover {
-    background: var(--color-orange-deep);
-  }
+  .btn-primary:hover { background: var(--color-accent-deep); }
   .btn-ghost {
-    border: 1.5px solid var(--color-ink);
-    color: var(--color-ink);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--color-text);
   }
-  .btn-ghost.on-dark {
-    border-color: var(--color-paper);
-    color: var(--color-paper);
+  .btn-ghost:hover { border-color: var(--color-accent); }
+  .btn-inv {
+    background: #0a0a0a;
+    color: var(--color-text);
   }
+  .btn-inv:hover { background: #1a1a1a; }
+  .btn-ghost-inv {
+    border: 1px solid rgba(10,10,10,0.25);
+    color: #0a0a0a;
+  }
+  .btn-ghost-inv:hover { border-color: #0a0a0a; }
 
   /* FOOTER */
   .site-foot {
@@ -365,17 +538,21 @@ const c = await getContent();
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 28px 6vw;
-    background: var(--color-ink);
+    padding: 24px 6vw;
+    background: var(--color-bg);
     color: var(--color-mute);
-    font-size: 13px;
-    border-top: 1px solid #3a3a36;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    border-top: 1px solid var(--color-line);
+    font-family: var(--font-mono);
   }
 
   @media (max-width: 720px) {
+    .nav-links { display: none; }
     .vert-grid,
     .team-grid {
       grid-template-columns: 1fr;
     }
+    .hero-coord { display: none; }
   }
 </style>

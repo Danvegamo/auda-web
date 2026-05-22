@@ -1,46 +1,57 @@
 @import "tailwindcss";
 
-/* AUDA brand tokens — Tailwind v4 @theme exposes these as utilities
-   (bg-paper, text-ink, text-orange, etc.) */
 @theme {
-  --color-paper: #ede6d6;
-  --color-paper-deep: #e3dac6;
-  --color-ink: #2b2b2b;
-  --color-ink-soft: #4a4a46;
-  --color-orange: #e8825a;
-  --color-orange-deep: #d06a44;
+  --color-bg: #0a0a0a;
+  --color-surface: #111111;
+  --color-line: #1e1e1e;
+  --color-accent: #e8825a;
+  --color-accent-deep: #d06a44;
+  --color-text: #f0ece4;
+  --color-text-soft: #9a9590;
+  --color-mute: #3a3a36;
   --color-green: #5c7c5a;
   --color-blue: #3e5c76;
-  --color-mute: #8a8478;
 
   --font-serif: "Fraunces", Georgia, serif;
   --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
 }
 
 html {
-  scroll-behavior: smooth;
-  background: var(--color-paper);
+  background: var(--color-bg);
+  overflow-x: hidden;
 }
 
 body {
   margin: 0;
   font-family: var(--font-sans);
-  color: var(--color-ink);
-  background: var(--color-paper);
+  color: var(--color-text);
+  background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
 
-/* Decorative grid backdrop — núcleo visual del inspire */
+/* dot grid — puntos en intersecciones */
 .auda-grid {
+  background-image: radial-gradient(circle, rgba(232, 130, 90, 0.18) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* line grid — líneas finas */
+.auda-lines {
   background-image:
-    linear-gradient(to right, rgba(43, 43, 43, 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(43, 43, 43, 0.06) 1px, transparent 1px);
-  background-size: 48px 48px;
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* revelado de texto — líneas y elementos */
+[data-reveal] {
+  opacity: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -49,4 +60,5 @@ body {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }
+  [data-reveal] { opacity: 1; }
 }

@@ -1,0 +1,199 @@
+---
+---
+
+<div id="loader" aria-hidden="true">
+  <div class="l-grid"></div>
+  <div class="l-content">
+    <div class="l-logo">
+      <span class="l-char">A</span>
+      <span class="l-char">U</span>
+      <span class="l-char">D</span>
+      <span class="l-char">A</span>
+    </div>
+    <div class="l-sub">Estudio AI-first</div>
+    <div class="l-bar-wrap">
+      <div class="l-bar"></div>
+    </div>
+    <div class="l-counter"><span id="l-pct">0</span><span class="l-percent">%</span></div>
+  </div>
+  <div class="l-panel l-panel-top"></div>
+  <div class="l-panel l-panel-bot"></div>
+</div>
+
+<style>
+  #loader {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: #0a0a0a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .l-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(232, 130, 90, 0.12) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0;
+  }
+  .l-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .l-logo {
+    display: flex;
+    gap: 6px;
+  }
+  .l-char {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: clamp(64px, 12vw, 120px);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #f0ece4;
+    transform: translateY(30px);
+    opacity: 0;
+    display: inline-block;
+  }
+  .l-sub {
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: #e8825a;
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  .l-bar-wrap {
+    width: 200px;
+    height: 1px;
+    background: rgba(255,255,255,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+  .l-bar {
+    position: absolute;
+    inset: 0;
+    background: #e8825a;
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+  .l-counter {
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    font-size: 11px;
+    color: rgba(240,236,228,0.4);
+    letter-spacing: 0.1em;
+    opacity: 0;
+  }
+  .l-percent { margin-left: 1px; }
+
+  /* split panels */
+  .l-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: #0a0a0a;
+    z-index: 3;
+    transform: scaleY(0);
+  }
+  .l-panel-top {
+    top: 0;
+    transform-origin: top;
+  }
+  .l-panel-bot {
+    bottom: 0;
+    transform-origin: bottom;
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+
+  function runLoader() {
+    const loader = document.getElementById('loader');
+    if (!loader) return;
+
+    const chars = loader.querySelectorAll<HTMLElement>('.l-char');
+    const grid = loader.querySelector<HTMLElement>('.l-grid');
+    const sub = loader.querySelector<HTMLElement>('.l-sub');
+    const bar = loader.querySelector<HTMLElement>('.l-bar');
+    const counter = loader.querySelector<HTMLElement>('.l-counter');
+    const pct = document.getElementById('l-pct');
+    const panelTop = loader.querySelector<HTMLElement>('.l-panel-top');
+    const panelBot = loader.querySelector<HTMLElement>('.l-panel-bot');
+
+    const tl = gsap.timeline({
+      onComplete: () => {
+        loader.style.display = 'none';
+      }
+    });
+
+    // fade in grid
+    tl.to(grid, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 0);
+
+    // chars drop in staggered
+    tl.to(chars, {
+      y: 0,
+      opacity: 1,
+      duration: 0.7,
+      ease: 'power3.out',
+      stagger: 0.08,
+    }, 0.1);
+
+    // sub + counter appear
+    tl.to([sub, counter], {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      ease: 'power2.out',
+      stagger: 0.1,
+    }, 0.5);
+
+    // bar + counter animate together
+    tl.to(bar, {
+      scaleX: 1,
+      duration: 1.4,
+      ease: 'power2.inOut',
+    }, 0.6);
+
+    // counter count up
+    const obj = { val: 0 };
+    tl.to(obj, {
+      val: 100,
+      duration: 1.4,
+      ease: 'power2.inOut',
+      onUpdate: () => {
+        if (pct) pct.textContent = Math.round(obj.val).toString();
+      },
+    }, 0.6);
+
+    // hold briefly
+    tl.to({}, { duration: 0.2 });
+
+    // split reveal — panels slide out
+    tl.to(panelTop, { scaleY: 1, duration: 0, ease: 'none' });
+    tl.to(panelBot, { scaleY: 1, duration: 0, ease: 'none' });
+    tl.to([grid, chars, sub, bar, counter?.parentElement, counter],
+      { opacity: 0, duration: 0.15 }, '<');
+    tl.to(panelTop, {
+      scaleY: 0,
+      duration: 0.6,
+      ease: 'power4.inOut',
+    }, '+=0.05');
+    tl.to(panelBot, {
+      scaleY: 0,
+      duration: 0.6,
+      ease: 'power4.inOut',
+    }, '<');
+  }
+
+  document.addEventListener('astro:page-load', runLoader);
+  runLoader();
+</script>
