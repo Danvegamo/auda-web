@@ -365,7 +365,8 @@ const c = await getContent();
     font-weight: 600;
     font-size: clamp(30px, 4.5vw, 52px);
     line-height: 1.06;
-    margin: 0 0 20px;
+    padding-bottom: 0.1em; /* prevents descenders from getting cut off */
+    margin: 0 0 32px;
     letter-spacing: -0.02em;
     color: var(--color-text);
   }

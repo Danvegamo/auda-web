@@ -35,6 +35,7 @@ function wrapLines(el: Element): HTMLElement[] {
 function initReveal() {
   // data-reveal="up" — elementos suben desde abajo
   gsap.utils.toArray<HTMLElement>('[data-reveal="up"]').forEach((el) => {
+    el.style.opacity = '1';
     gsap.from(el, {
       y: 40,
       opacity: 0,
@@ -46,11 +47,11 @@ function initReveal() {
         toggleActions: 'play none none none',
       },
     });
-    el.style.opacity = '';
   });
 
   // data-reveal="line" — texto se revela línea por línea
   gsap.utils.toArray<HTMLElement>('[data-reveal="line"]').forEach((el) => {
+    el.style.opacity = '1';
     const spans = wrapLines(el);
     gsap.from(spans, {
       y: '100%',
@@ -64,11 +65,11 @@ function initReveal() {
         toggleActions: 'play none none none',
       },
     });
-    el.style.opacity = '';
   });
 
   // data-reveal="stagger" — hijos entran escalonados
   gsap.utils.toArray<HTMLElement>('[data-reveal="stagger"]').forEach((el) => {
+    el.style.opacity = '1';
     const children = Array.from(el.children) as HTMLElement[];
     gsap.from(children, {
       y: 30,
@@ -82,7 +83,6 @@ function initReveal() {
         toggleActions: 'play none none none',
       },
     });
-    el.style.opacity = '';
   });
 }
 
