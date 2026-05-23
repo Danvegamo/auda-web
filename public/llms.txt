@@ -30,11 +30,11 @@ AUDA combina diagnóstico organizacional, diseño e ingeniería de IA embebida. 
 
 ## Equipo
 
-- Dan (David Vega) — solution architect y forward-deployed builder: ejecución técnica, IA, dev, infraestructura, datos.
+- David Vega — solution architect y forward-deployed builder: ejecución técnica, IA, dev, infraestructura, datos.
 - Aura — strategy lead y project manager: gestión empresarial, diseño, estrategia, relación con el cliente.
 
 ## Contacto
 
 - Email: hola@auda.lat
 - Sitio: https://auda.lat
-- Ubicación: Bogotá / Medellín, Colombia
+- Ubicación: Bogotá, Colombia
