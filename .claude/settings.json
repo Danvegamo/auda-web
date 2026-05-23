@@ -7,7 +7,14 @@
       "Bash(curl -s -o /tmp/guide.html -w \"HTTP %{http_code} %{size_download}b\\\\n\" http://localhost:4321/guide)",
       "Bash(curl -s -o /dev/null -w '%{http_code}' http://[::1]:__TRACKED_VAR__/)",
       "Bash(curl -s -o /tmp/idx.html -w \"/ HTTP %{http_code} %{size_download}b\\\\n\" \"http://[::1]:4323/\")",
-      "Bash(curl -s -o /tmp/guide.html -w \"/guide HTTP %{http_code} %{size_download}b\\\\n\" \"http://[::1]:4323/guide\")"
+      "Bash(curl -s -o /tmp/guide.html -w \"/guide HTTP %{http_code} %{size_download}b\\\\n\" \"http://[::1]:4323/guide\")",
+      "Bash(nohup npm run dev)",
+      "Bash(disown)",
+      "Bash(curl -s http://localhost:4321 -o /tmp/audaindex.html)",
+      "Bash(pkill -f \"astro dev\")",
+      "Bash(sort -k5 -h)",
+      "Bash(curl -s \"http://localhost:4321/src/scripts/scroll.ts\" -o /tmp/audascroll.js)",
+      "Bash(curl -s \"http://localhost:4321/src/scripts/scene3d.ts\" -o /tmp/audascene.js)"
     ]
   }
 }

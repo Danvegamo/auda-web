@@ -3,12 +3,17 @@ interface Props { lines: string[] }
 const { lines } = Astro.props;
 ---
 
-<section class="band manifesto" aria-label="Manifiesto">
+<section class="band manifesto" aria-label="Manifiesto" data-mood="warm" data-cursor="read">
   <div class="wrap narrow">
     <span class="eyebrow" data-reveal="up">Manifiesto</span>
     <div class="m-lines">
-      {lines.map((l) => (
-        <p class="m-line" data-reveal="line">{l}</p>
+      {lines.map((l, i) => (
+        <p
+          class="m-line"
+          data-reveal="line"
+          data-velocity-blur
+          data-morph-target={i === lines.length - 1 ? '' : undefined}
+        >{l}</p>
       ))}
     </div>
   </div>

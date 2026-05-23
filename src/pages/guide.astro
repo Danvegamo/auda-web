@@ -165,6 +165,18 @@ npm run preview</code></pre>
         <h2>Próximas mejoras priorizadas</h2>
 
         <div class="g-milestone">
+          <span class="g-milestone-tag">M0 · Entregado (mayo 2026)</span>
+          <h3>Capa cinemática + 3D por tier + mouse expresivo</h3>
+          <ul>
+            <li><strong>5 escenas WebGL</strong> (three.js + postprocessing) — una por capa de servicio. Particles ensamblándose, plano wave-shader, torre de nodos, hub-and-spoke, torus holográfico.</li>
+            <li><strong>Scroll dinámico</strong>: velocity blur global, parallax layers, morfeo de heading entre secciones (clip-path wipe + cross-fade), mood color shift por sección (warm/cool/dark).</li>
+            <li><strong>Mouse expresivo</strong>: magnetic CTAs, escala adaptativa según data-cursor (read/view/act), cursor se desvanece sobre escenas 3D para dejar paso a orbit local.</li>
+            <li><strong>Performance</strong>: three.js lazy-loaded vía dynamic import al acercarse el primer tier; IntersectionObserver pausa render fuera de viewport; DPR clamp 1.5; postprocessing solo desktop.</li>
+            <li><strong>Fallbacks</strong>: <code>prefers-reduced-motion</code> y <code>data-3d-fail</code> caen al SVG anterior por tier; el contenido textual permanece visible.</li>
+          </ul>
+        </div>
+
+        <div class="g-milestone">
           <span class="g-milestone-tag">M1 · Esta semana</span>
           <h3>SEO técnico completo</h3>
           <ul>
@@ -229,9 +241,11 @@ npm run preview</code></pre>
           <span class="g-milestone-tag">M7 · Continuo</span>
           <h3>Refinamiento de animaciones</h3>
           <ul>
-            <li>WebGL ambient backdrop en hero (shader con noise).</li>
-            <li>Cursor reactivo a tipo de contenido (texto/visual/CTA).</li>
+            <li>WebGL ambient backdrop en hero (shader con noise) — pendiente; el hero actual usa DotField 2D.</li>
+            <li>Cursor reactivo a tipo de contenido (texto/visual/CTA) — <strong>hecho en M0</strong> vía <code>data-cursor</code>.</li>
             <li>Transiciones entre rutas con View Transitions (ya está <code>ClientRouter</code>).</li>
+            <li>Postprocessing avanzado por escena: depth-of-field, glitch puntual en tier4 holográfico, vignette dinámico.</li>
+            <li>Auditar bundle de three.js (~150KB gz) — considerar three-stdlib subset si las escenas se simplifican.</li>
           </ul>
         </div>
       </section>

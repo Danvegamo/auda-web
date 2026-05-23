@@ -1,0 +1,63 @@
+---
+import type { TierVariant, Accent } from '../../lib/wp';
+
+interface Props {
+  variant: TierVariant;
+  accent: Accent;
+  index: number;
+}
+
+const { variant, accent, index } = Astro.props;
+
+const stroke: Record<Accent, string> = {
+  orange: 'var(--color-orange)',
+  green: 'var(--color-green)',
+  blue: 'var(--color-blue)',
+  ink: 'var(--color-text)',
+};
+
+// Fallback SVG idéntico al TierAccent anterior — visible si JS off o reduce-motion.
+const paths: Record<TierVariant, string> = {
+  tier0: 'M 20 220 C 80 200, 140 80, 240 70',
+  tier1: 'M 20 140 Q 60 60, 100 140 T 180 140 T 260 140',
+  tier2: 'M 20 200 L 80 180 L 80 120 L 160 100 L 160 60 L 260 40',
+  tier3: 'M 140 140 L 40 60 M 140 140 L 240 60 M 140 140 L 240 220 M 140 140 L 40 220 M 140 140 L 140 30 M 140 140 L 140 250',
+  tier4: 'M 60 140 C 60 60, 220 60, 220 140 C 220 220, 60 220, 60 140 Z',
+};
+
+const d = paths[variant];
+const color = stroke[accent];
+---
+
+<div
+  class="tier-visual-stage"
+  data-tier-index={index}
+  data-accent={accent}
+  data-variant={variant}
+  data-cursor="view"
+>
+  <canvas data-tier-scene={variant} aria-hidden="true"></canvas>
+
+  <svg
+    class="tier-visual-fallback"
+    viewBox="0 0 280 280"
+    preserveAspectRatio="xMidYMid meet"
+    aria-hidden="true"
+  >
+    <defs>
+      <pattern id={`grid-fb-${index}`} width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="var(--color-line)" stroke-width="0.5" />
+      </pattern>
+    </defs>
+    <rect width="280" height="280" fill={`url(#grid-fb-${index})`} opacity="0.6" />
+    <path
+      d={d}
+      stroke={color}
+      stroke-width="1.6"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="none"
+    />
+    <circle cx="140" cy="140" r="4" fill={color} />
+  </svg>
+</div>

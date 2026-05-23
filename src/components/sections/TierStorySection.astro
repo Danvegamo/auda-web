@@ -1,5 +1,5 @@
 ---
-import TierAccent from '../svg/TierAccent.astro';
+import TierVisual from '../svg/TierVisual.astro';
 import type { Tier } from '../../lib/wp';
 
 interface Props { tier: Tier; index: number; total: number }
@@ -12,6 +12,8 @@ const tot = String(total).padStart(2, '0');
   class={`tier-story accent-${tier.accent}`}
   data-tier-story
   data-cinematic
+  data-tier-index={index}
+  data-mood={tier.accent === 'ink' ? 'dark' : tier.accent === 'blue' ? 'cool' : 'warm'}
   id={`tier-${tier.n}`}
 >
   <div class="ts-axis" aria-hidden="true">
@@ -37,7 +39,7 @@ const tot = String(total).padStart(2, '0');
       </p>
     </div>
     <div class="ts-visual">
-      <TierAccent variant={tier.variant} accent={tier.accent} />
+      <TierVisual variant={tier.variant} accent={tier.accent} index={index} />
     </div>
   </div>
 </section>

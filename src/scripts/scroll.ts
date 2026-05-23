@@ -1,12 +1,15 @@
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { bootCinematic } from './cinematic';
+import './scene3d';
 
 gsap.registerPlugin(ScrollTrigger);
 
 declare global {
   interface Window {
     __lenis?: Lenis;
+    __audaTierProgress?: Map<number, number>;
   }
 }
 
@@ -160,6 +163,16 @@ function initCinematic() {
     if (fadeGate) gsap.set(fadeGate, { opacity: 0 });
 
     if (mobile) {
+      const tierIdxMobile = parseInt(sec.dataset.tierIndex || '0', 10);
+      ScrollTrigger.create({
+        trigger: sec,
+        start: 'top bottom',
+        end: 'bottom top',
+        onUpdate: (self) => {
+          window.__audaTierProgress ??= new Map();
+          window.__audaTierProgress.set(tierIdxMobile, self.progress);
+        },
+      });
       const tl = gsap.timeline({
         scrollTrigger: { trigger: sec, start: 'top 80%', toggleActions: 'play none none none' },
       });
@@ -171,6 +184,7 @@ function initCinematic() {
       return;
     }
 
+    const tierIdx = parseInt(sec.dataset.tierIndex || '0', 10);
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sec,
@@ -179,6 +193,10 @@ function initCinematic() {
         scrub: 0.8,
         pin: true,
         anticipatePin: 1,
+        onUpdate: (self) => {
+          window.__audaTierProgress ??= new Map();
+          window.__audaTierProgress.set(tierIdx, self.progress);
+        },
       },
     });
 
@@ -223,6 +241,7 @@ function initCinematic() {
 function init() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => (el.style.opacity = '1'));
+    bootCinematic();
     return;
   }
   initLenis();
@@ -230,6 +249,7 @@ function init() {
   initReveal();
   initDrawLine();
   initCinematic();
+  bootCinematic();
 }
 
 let booted = false;

@@ -13,7 +13,7 @@ interface Props {
 const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.props;
 ---
 
-<header class="hero auda-lines">
+<header class="hero auda-lines" data-mood="warm">
   <DotField />
   <nav class="nav">
     <a class="brand" href="/" aria-label="AUDA inicio">
@@ -28,7 +28,7 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
         <span class="st-dot"></span> son.
       </button>
       <ThemeToggle />
-      <a href="#contacto" class="nav-cta" data-cursor-grow>Contactar</a>
+      <a href="#contacto" class="nav-cta" data-cursor-grow data-magnet>Contactar</a>
     </div>
   </nav>
 
@@ -37,11 +37,11 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
       <span class="dot-accent"></span>
       Estudio AI-first · Bogotá / Medellín
     </div>
-    <h1 data-reveal="type">{tagline}</h1>
-    <p class="lead" data-reveal="up">{intro}</p>
-    <div class="cta-row" data-reveal="up">
-      <a class="btn btn-primary" href="#reservar" data-cursor-grow>Agendar conversación</a>
-      <a class="btn btn-ghost" href="#servicios" data-cursor-grow>Ver capas</a>
+    <h1 data-reveal="type" data-morph-target data-velocity-blur>{tagline}</h1>
+    <p class="lead" data-reveal="up" data-cursor="read">{intro}</p>
+    <div class="cta-row" data-reveal="up" data-cursor="act">
+      <a class="btn btn-primary" href="#reservar" data-cursor-grow data-magnet>Agendar conversación</a>
+      <a class="btn btn-ghost" href="#servicios" data-cursor-grow data-magnet>Ver capas</a>
     </div>
   </div>
 

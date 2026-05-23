@@ -119,12 +119,75 @@ function boot() {
   const state = { scale: 1.0 };
   const toScale = gsap.quickTo(state, 'scale', { duration: 0.3, ease: 'power2' });
 
+  // Fade global del cursor (lo bajamos cuando hover sobre escena 3D)
+  const opa = { v: 1 };
+  const toOpa = gsap.quickTo(opa, 'v', { duration: 0.3, ease: 'power2' });
+  canvas.style.transition = 'opacity 0.3s ease';
+
   document.addEventListener('mouseover', (e) => {
     const t = e.target as HTMLElement | null;
     if (!t || !t.closest) return;
-    const hit = t.closest('a, button, [data-cursor-grow]');
-    toScale(hit ? 2.2 : 1.0);
+    const onTierScene = t.closest('[data-tier-scene], .tier-visual-stage');
+    if (onTierScene) {
+      toScale(0.7);
+      toOpa(0.15);
+      return;
+    }
+    const region = t.closest('[data-cursor]') as HTMLElement | null;
+    const mode = region?.dataset.cursor;
+    if (mode === 'act') toScale(2.6);
+    else if (mode === 'view') toScale(1.5);
+    else if (mode === 'read') toScale(0.85);
+    else {
+      const hit = t.closest('a, button, [data-cursor-grow], [data-magnet]');
+      toScale(hit ? 2.2 : 1.0);
+    }
+    toOpa(1);
   });
+
+  // Magnetic targets — quickTo por elemento, reusable
+  const magnets = new Map<HTMLElement, { x: ReturnType<typeof gsap.quickTo>; y: ReturnType<typeof gsap.quickTo>; rect: DOMRect | null; active: boolean }>();
+  function bindMagnet(el: HTMLElement) {
+    if (magnets.has(el)) return;
+    const ent = {
+      x: gsap.quickTo(el, 'x', { duration: 0.35, ease: 'power3' }),
+      y: gsap.quickTo(el, 'y', { duration: 0.35, ease: 'power3' }),
+      rect: null as DOMRect | null,
+      active: false,
+    };
+    magnets.set(el, ent);
+    el.addEventListener('pointerenter', () => {
+      ent.active = true;
+      ent.rect = el.getBoundingClientRect();
+    });
+    el.addEventListener('pointerleave', () => {
+      ent.active = false;
+      ent.x(0);
+      ent.y(0);
+    });
+  }
+  document.querySelectorAll<HTMLElement>('[data-magnet]').forEach(bindMagnet);
+  // Re-bind tras posibles inserciones futuras (no obligatorio en SSR)
+  const moMag = new MutationObserver(() => {
+    document.querySelectorAll<HTMLElement>('[data-magnet]').forEach(bindMagnet);
+  });
+  moMag.observe(document.body, { childList: true, subtree: true });
+
+  window.addEventListener(
+    'pointermove',
+    (e) => {
+      magnets.forEach((ent, el) => {
+        if (!ent.active || !ent.rect) return;
+        const cx = ent.rect.left + ent.rect.width / 2;
+        const cy = ent.rect.top + ent.rect.height / 2;
+        const dx = (e.clientX - cx) * 0.35;
+        const dy = (e.clientY - cy) * 0.35;
+        ent.x(Math.max(-12, Math.min(12, dx)));
+        ent.y(Math.max(-10, Math.min(10, dy)));
+      });
+    },
+    { passive: true },
+  );
 
   document.addEventListener('auda:themechange', () => {
     program.uniforms.uColor.value = readColor();
@@ -138,6 +201,7 @@ function boot() {
     m[0] = mouse.x;
     m[1] = mouse.y;
     program.uniforms.uScale.value = state.scale;
+    canvas.style.opacity = String(opa.v);
     renderer.render({ scene: mesh });
   });
 

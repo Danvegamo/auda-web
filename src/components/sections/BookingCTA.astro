@@ -8,10 +8,10 @@ const { calendarUrl, email, whatsapp } = Astro.props;
 const wa = whatsapp.replace(/[^0-9]/g, '');
 ---
 
-<section class="band booking auda-lines" id="reservar">
+<section class="band booking auda-lines" id="reservar" data-mood="warm" data-cursor="act">
   <div class="wrap narrow">
     <span class="eyebrow" data-reveal="up">Reserva</span>
-    <h2 data-reveal="line">Conversemos.</h2>
+    <h2 data-reveal="line" data-morph-target data-velocity-blur>Conversemos.</h2>
     <p class="section-sub" data-reveal="up">
       Trabajamos con un número limitado de organizaciones por trimestre. Cada relación arranca
       con una conversación de treinta minutos: leemos tu contexto, identificamos el músculo de IA
@@ -31,6 +31,7 @@ const wa = whatsapp.replace(/[^0-9]/g, '');
         target="_blank"
         rel="noopener noreferrer"
         data-cursor-grow
+        data-magnet
       >
         [ AGENDAR CONVERSACIÓN ]
       </a>
@@ -40,8 +41,9 @@ const wa = whatsapp.replace(/[^0-9]/g, '');
         target="_blank"
         rel="noopener noreferrer"
         data-cursor-grow
+        data-magnet
       >WhatsApp directo</a>
-      <a class="btn btn-ghost" href={`mailto:${email}`} data-cursor-grow>Correo</a>
+      <a class="btn btn-ghost" href={`mailto:${email}`} data-cursor-grow data-magnet>Correo</a>
     </div>
 
     <p class="b-foot" data-reveal="up">

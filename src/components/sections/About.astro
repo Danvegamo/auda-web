@@ -3,10 +3,10 @@ interface Props { heading: string; body: string[] }
 const { heading, body } = Astro.props;
 ---
 
-<section class="band" id="que-es">
+<section class="band" id="que-es" data-mood="cool" data-cursor="read">
   <div class="wrap narrow">
     <span class="eyebrow" data-reveal="up">Qué es AUDA</span>
-    <h2 data-reveal="line">{heading}</h2>
+    <h2 data-reveal="line" data-morph-target data-velocity-blur>{heading}</h2>
     {body.map((p) => <p class="body-lg" data-reveal="up">{p}</p>)}
   </div>
 </section>
