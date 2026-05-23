@@ -1,0 +1,12 @@
+---
+interface Props { heading: string; body: string[] }
+const { heading, body } = Astro.props;
+---
+
+<section class="band" id="que-es">
+  <div class="wrap narrow">
+    <span class="eyebrow" data-reveal="up">Qué es AUDA</span>
+    <h2 data-reveal="line">{heading}</h2>
+    {body.map((p) => <p class="body-lg" data-reveal="up">{p}</p>)}
+  </div>
+</section>

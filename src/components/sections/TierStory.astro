@@ -1,0 +1,31 @@
+---
+import TierStorySection from './TierStorySection.astro';
+import type { Tier } from '../../lib/wp';
+
+interface Props { tiers: Tier[] }
+const { tiers } = Astro.props;
+---
+
+<section class="tier-story-shell" id="servicios">
+  <div class="ts-intro band">
+    <div class="wrap">
+      <span class="eyebrow" data-reveal="up">Servicios · Cinco capas</span>
+      <h2 data-reveal="line">Una sola relación, contada en cinco escalones.</h2>
+      <p class="section-sub" data-reveal="up">
+        Entrada de baja fricción, recurrencia sólida, consultoría de alto valor. Cada tier
+        se cuenta con su propia gráfica: lo que entras es lo que sales.
+      </p>
+    </div>
+  </div>
+
+  {tiers.map((t) => <TierStorySection tier={t} />)}
+</section>
+
+<style>
+  .tier-story-shell {
+    border-top: 1px solid var(--color-line);
+  }
+  .ts-intro {
+    padding-bottom: clamp(40px, 6vw, 70px);
+  }
+</style>

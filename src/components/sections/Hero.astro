@@ -1,0 +1,220 @@
+---
+import AudaMark from '../AudaMark.astro';
+import DotField from '../DotField.astro';
+import ThemeToggle from '../ThemeToggle.astro';
+
+interface Props {
+  tagline: string;
+  intro: string;
+  email: string;
+  coord?: string;
+}
+
+const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.props;
+---
+
+<header class="hero auda-lines">
+  <DotField />
+  <nav class="nav">
+    <a class="brand" href="/" aria-label="AUDA inicio">
+      <AudaMark size={34} />
+      <span class="brand-word">AUDA</span>
+    </a>
+    <div class="nav-links">
+      <a href="#servicios">Servicios</a>
+      <a href="#framework">Metodología</a>
+      <a href="#precios">Precios</a>
+      <button id="sound-toggle" class="sound-toggle" type="button" data-cursor-grow aria-label="Sonido ambiente">
+        <span class="st-dot"></span> son.
+      </button>
+      <ThemeToggle />
+      <a href="#contacto" class="nav-cta" data-cursor-grow>Contactar</a>
+    </div>
+  </nav>
+
+  <div class="hero-inner">
+    <div class="hero-eyebrow" data-reveal="up">
+      <span class="dot-accent"></span>
+      Estudio AI-first · Bogotá / Medellín
+    </div>
+    <h1 data-reveal="type">{tagline}</h1>
+    <p class="lead" data-reveal="up">{intro}</p>
+    <div class="cta-row" data-reveal="up">
+      <a class="btn btn-primary" href="#servicios" data-cursor-grow>Ver servicios</a>
+      <a class="btn btn-ghost" href={`mailto:${email}`} data-cursor-grow>Hablar con AUDA</a>
+    </div>
+  </div>
+
+  <div class="hero-foot">
+    <div class="scroll-hint" aria-hidden="true">
+      <span class="sh-line"></span>
+      <span class="sh-label">scroll</span>
+    </div>
+    <div class="hero-coord" aria-hidden="true">{coord}</div>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 6vw;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--color-text);
+  }
+  .brand-word {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.22em;
+    color: var(--color-text);
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  .nav-links a {
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--color-text-soft);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--color-text); }
+  .sound-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--color-text-soft);
+    padding: 0;
+  }
+  .sound-toggle:hover { color: var(--color-text); }
+  .st-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    border: 1px solid var(--color-orange);
+    transition: background 0.2s;
+  }
+  .sound-toggle.on .st-dot { background: var(--color-orange); }
+  .nav-cta {
+    padding: 8px 18px;
+    border: 1px solid var(--color-line);
+    color: var(--color-text) !important;
+    transition: border-color 0.2s, background 0.2s !important;
+  }
+  .nav-cta:hover {
+    border-color: var(--color-orange) !important;
+    background: rgba(232, 130, 90, 0.08);
+  }
+
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px 6vw 80px;
+    overflow: hidden;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 880px;
+  }
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--color-text-soft);
+    margin-bottom: 28px;
+    font-family: var(--font-mono);
+  }
+  .dot-accent {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-orange);
+    flex-shrink: 0;
+  }
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(40px, 6.5vw, 82px);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+    margin: 0 0 24px;
+    color: var(--color-text);
+  }
+  .lead {
+    font-size: clamp(16px, 2vw, 19px);
+    color: var(--color-text-soft);
+    max-width: 600px;
+    margin: 0 0 36px;
+    line-height: 1.6;
+  }
+  .hero-foot {
+    position: absolute;
+    bottom: 36px;
+    left: 6vw;
+    right: 6vw;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .scroll-hint { display: flex; align-items: center; gap: 12px; }
+  .sh-line {
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--color-orange);
+    animation: sh-pulse 2s ease-in-out infinite;
+  }
+  @keyframes sh-pulse {
+    0%, 100% { opacity: 0.3; transform: scaleX(0.6); transform-origin: left; }
+    50% { opacity: 1; transform: scaleX(1); }
+  }
+  .sh-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-text-soft);
+  }
+  .hero-coord {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-mute);
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 720px) {
+    .nav-links { gap: 18px; }
+    .nav-links a[href="#servicios"],
+    .nav-links a[href="#framework"],
+    .nav-links a[href="#precios"] { display: none; }
+    .hero-coord { display: none; }
+  }
+</style>

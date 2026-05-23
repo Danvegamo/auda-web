@@ -1,91 +1,35 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import AudaMark from '../components/AudaMark.astro';
-import DotField from '../components/DotField.astro';
-import TierPlane from '../components/TierPlane.astro';
-import TierStack from '../components/TierStack.astro';
-import Framework from '../components/Framework.astro';
+import Hero from '../components/sections/Hero.astro';
+import About from '../components/sections/About.astro';
+import Manifesto from '../components/sections/Manifesto.astro';
+import TierStory from '../components/sections/TierStory.astro';
+import Framework from '../components/sections/Framework.astro';
+import Verticals from '../components/sections/Verticals.astro';
+import Team from '../components/sections/Team.astro';
+import PricingTable from '../components/sections/PricingTable.astro';
+import Contact from '../components/sections/Contact.astro';
 import { getContent } from '../lib/wp';
 
 const c = await getContent();
-const wa = c.contact.whatsapp.replace(/[^0-9]/g, '');
 ---
 
 <BaseLayout>
-  <!-- HERO -->
-  <header class="hero auda-lines">
-    <DotField />
-    <nav class="nav">
-      <a class="brand" href="/" aria-label="AUDA inicio">
-        <AudaMark size={34} />
-        <span class="brand-word">AUDA</span>
-      </a>
-      <div class="nav-links">
-        <a href="#servicios">Servicios</a>
-        <a href="#framework">Metodología</a>
-        <button id="sound-toggle" class="sound-toggle" type="button" aria-label="Sonido ambiente">
-          <span class="st-dot"></span> son.
-        </button>
-        <a href="#contacto" class="nav-cta">Contactar</a>
-      </div>
-    </nav>
-
-    <div class="hero-inner">
-      <div class="hero-eyebrow" data-reveal="up">
-        <span class="dot-accent"></span>
-        Estudio AI-first · Bogotá / Medellín
-      </div>
-      <h1 data-reveal="type">{c.tagline}</h1>
-      <p class="lead" data-reveal="up">{c.intro}</p>
-      <div class="cta-row" data-reveal="up">
-        <a class="btn btn-primary" href="#servicios">Ver servicios</a>
-        <a class="btn btn-ghost" href={`mailto:${c.contact.email}`}>Hablar con AUDA</a>
-      </div>
-    </div>
-
-    <div class="hero-foot">
-      <div class="scroll-hint" aria-hidden="true">
-        <span class="sh-line"></span>
-        <span class="sh-label">scroll</span>
-      </div>
-      <div class="hero-coord" aria-hidden="true">4.7110° N / 74.0721° W</div>
-    </div>
-  </header>
+  <Hero tagline={c.tagline} intro={c.intro} email={c.contact.email} />
 
   <main>
-    <!-- QUÉ ES -->
-    <section class="band" id="que-es">
-      <div class="wrap narrow">
-        <span class="eyebrow" data-reveal="up">Qué es AUDA</span>
-        <h2 data-reveal="line">{c.about.heading}</h2>
-        {c.about.body.map((p) => <p class="body-lg" data-reveal="up">{p}</p>)}
-      </div>
-    </section>
+    <Manifesto lines={c.manifesto.lines} />
 
     <div class="divider" aria-hidden="true"></div>
 
-    <!-- SERVICIOS / PLANO CARTESIANO -->
-    <section class="band band-plane" id="servicios">
-      <div class="wrap">
-        <span class="eyebrow" data-reveal="up">Servicios · El plano del modelo</span>
-        <h2 data-reveal="line">Cinco capas, una sola relación.</h2>
-        <p class="section-sub" data-reveal="up">
-          Cada esfera es un Tier. Su tamaño refleja el volumen del ticket; su posición, cuánta
-          complejidad técnica e impacto organizacional moviliza. Entrada de baja fricción,
-          recurrencia sólida, consultoría de alto valor.
-        </p>
-      </div>
-      <div class="plane-host only-desktop">
-        <TierPlane tiers={c.tiers} />
-      </div>
-      <div class="wrap only-mobile">
-        <TierStack tiers={c.tiers} />
-      </div>
-    </section>
+    <About heading={c.about.heading} body={c.about.body} />
 
     <div class="divider" aria-hidden="true"></div>
 
-    <!-- FRAMEWORK -->
+    <TierStory tiers={c.tiers} />
+
+    <div class="divider" aria-hidden="true"></div>
+
     <section class="band" id="framework">
       <div class="wrap">
         <span class="eyebrow" data-reveal="up">Metodología</span>
@@ -100,74 +44,17 @@ const wa = c.contact.whatsapp.replace(/[^0-9]/g, '');
 
     <div class="divider" aria-hidden="true"></div>
 
-    <!-- PARA QUIÉN -->
-    <section class="band" id="para-quien">
-      <div class="wrap">
-        <span class="eyebrow" data-reveal="up">Para quién</span>
-        <h2 data-reveal="line">Organizaciones con propósito.</h2>
-        <div class="vert-grid" data-reveal="stagger">
-          {
-            c.verticals.map((v) => (
-              <article class="vert-card">
-                <span class="tag">{v.tag}</span>
-                <h3>{v.title}</h3>
-                <p>{v.pain}</p>
-              </article>
-            ))
-          }
-        </div>
-      </div>
-    </section>
+    <PricingTable tiers={c.tiers} />
 
     <div class="divider" aria-hidden="true"></div>
 
-    <!-- EQUIPO -->
-    <section class="band" id="equipo">
-      <div class="wrap narrow">
-        <span class="eyebrow" data-reveal="up">Equipo</span>
-        <h2 data-reveal="line">Dos lados complementarios. Ninguno sobra.</h2>
-        <div class="team-grid" data-reveal="stagger">
-          {
-            c.team.map((m) => (
-              <article class="team-card">
-                <div class="team-accent"></div>
-                <h3>{m.name}</h3>
-                <p class="role">{m.role}</p>
-                <p class="focus">{m.focus}</p>
-              </article>
-            ))
-          }
-        </div>
-        <p class="rule" data-reveal="up">
-          <strong>Regla de oro:</strong> Aura abre y cierra; Dan diagnostica y construye; ambos
-          validan en cada hito. Ningún cliente trabaja con uno solo de los dos.
-        </p>
-      </div>
-    </section>
+    <Verticals verticals={c.verticals} />
 
-    <!-- CONTACTO — bloque operativo (sección tinta) -->
-    <section class="band band-dark auda-grid" id="contacto">
-      <div class="wrap">
-        <div class="contact-grid">
-          <div class="contact-mark">
-            <AudaMark size={120} />
-            <span class="contact-tag">Productos y servicios audaces</span>
-          </div>
-          <div class="contact-body">
-            <span class="eyebrow on-dark" data-reveal="up">Contacto</span>
-            <h2 class="on-dark" data-reveal="line">Construyamos tu sistema de IA.</h2>
-            <p class="body-lg on-dark" data-reveal="up">
-              Una auditoría AI-first arranca con una conversación. Sin humo, sin caja negra.
-            </p>
-            <ul class="contact-list" data-reveal="stagger">
-              <li><span class="cl-k">WhatsApp</span><a href={`https://wa.me/${wa}`}>{c.contact.whatsapp}</a></li>
-              <li><span class="cl-k">Correo</span><a href={`mailto:${c.contact.email}`}>{c.contact.email}</a></li>
-              <li><span class="cl-k">Web</span><a href="https://auda.lat">auda.lat</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
+    <div class="divider" aria-hidden="true"></div>
+
+    <Team team={c.team} />
+
+    <Contact email={c.contact.email} whatsapp={c.contact.whatsapp} />
   </main>
 
   <footer class="site-foot">
@@ -192,411 +79,17 @@ const wa = c.contact.whatsapp.replace(/[^0-9]/g, '');
 </script>
 
 <style>
-  /* NAV */
-  .nav {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 24px 6vw;
-  }
-  .brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    color: var(--color-ink);
-  }
-  .brand-word {
-    font-family: var(--font-serif);
-    font-weight: 700;
-    font-size: 20px;
-    letter-spacing: 0.22em;
-    color: var(--color-ink);
-  }
-  .nav-links {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-  }
-  .nav-links a {
-    font-size: 13px;
-    letter-spacing: 0.06em;
-    color: var(--color-text-soft);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--color-ink); }
-  .sound-toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    color: var(--color-text-soft);
-    padding: 0;
-  }
-  .sound-toggle:hover { color: var(--color-ink); }
-  .st-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    border: 1px solid var(--color-orange);
-    transition: background 0.2s;
-  }
-  .sound-toggle.on .st-dot { background: var(--color-orange); }
-  .nav-cta {
-    padding: 8px 18px;
-    border: 1px solid var(--color-line);
-    color: var(--color-ink) !important;
-    transition: border-color 0.2s, background 0.2s !important;
-  }
-  .nav-cta:hover {
-    border-color: var(--color-orange) !important;
-    background: rgba(232, 130, 90, 0.08);
-  }
-
-  /* HERO */
-  .hero {
-    position: relative;
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 120px 6vw 80px;
-    overflow: hidden;
-  }
-  .hero-inner {
-    position: relative;
-    z-index: 2;
-    max-width: 880px;
-  }
-  .hero-eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--color-text-soft);
-    margin-bottom: 28px;
-    font-family: var(--font-mono);
-  }
-  .dot-accent {
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--color-orange);
-    flex-shrink: 0;
-  }
-  .hero h1 {
-    font-family: var(--font-serif);
-    font-weight: 600;
-    font-size: clamp(40px, 6.5vw, 82px);
-    line-height: 1.04;
-    letter-spacing: -0.025em;
-    margin: 0 0 24px;
-    color: var(--color-ink-deep);
-  }
-  .lead {
-    font-size: clamp(16px, 2vw, 19px);
-    color: var(--color-text-soft);
-    max-width: 600px;
-    margin: 0 0 36px;
-    line-height: 1.6;
-  }
-  .hero-foot {
-    position: absolute;
-    bottom: 36px;
-    left: 6vw;
-    right: 6vw;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .scroll-hint { display: flex; align-items: center; gap: 12px; }
-  .sh-line {
-    display: block;
-    width: 40px;
-    height: 1px;
-    background: var(--color-orange);
-    animation: sh-pulse 2s ease-in-out infinite;
-  }
-  @keyframes sh-pulse {
-    0%, 100% { opacity: 0.3; transform: scaleX(0.6); transform-origin: left; }
-    50% { opacity: 1; transform: scaleX(1); }
-  }
-  .sh-label {
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--color-text-soft);
-  }
-  .hero-coord {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--color-mute);
-    letter-spacing: 0.08em;
-  }
-
-  /* BANDS */
-  .band { padding: clamp(80px, 12vw, 140px) 6vw; }
-  .band-plane { overflow: hidden; }
-  .wrap { max-width: 1040px; margin: 0 auto; }
-  .narrow { max-width: 760px; }
-  .plane-host { padding: 0 6vw; }
-  .divider {
-    height: 1px;
-    margin: 0 6vw;
-    background: var(--color-line);
-  }
-  .eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--color-orange-deep);
-    margin-bottom: 20px;
-    font-weight: 600;
-    font-family: var(--font-mono);
-  }
-  .eyebrow::before {
-    content: '';
-    display: inline-block;
-    width: 20px;
-    height: 1px;
-    background: currentColor;
-  }
-  h2 {
-    font-family: var(--font-serif);
-    font-weight: 600;
-    font-size: clamp(30px, 4.5vw, 52px);
-    line-height: 1.08;
-    padding-bottom: 0.1em; /* evita que se corten los descendentes */
-    margin: 0 0 32px;
-    letter-spacing: -0.02em;
-    color: var(--color-ink-deep);
-  }
-  .section-sub {
-    max-width: 640px;
-    color: var(--color-text-soft);
-    font-size: 15px;
-    margin: 0 0 12px;
-    line-height: 1.65;
-  }
-  .body-lg {
-    font-size: 17px;
-    line-height: 1.7;
-    color: var(--color-text-soft);
-    margin: 0 0 16px;
-  }
-
-  /* responsive show/hide */
-  .only-mobile { display: none; }
-
-  /* VERTICALES */
-  .vert-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1px;
-    background: var(--color-line);
-    border: 1px solid var(--color-line);
-    margin-top: 40px;
-  }
-  .vert-card {
-    background: var(--color-paper-soft);
-    padding: 28px 24px;
-    transition: background 0.25s ease;
-  }
-  .vert-card:hover { background: #fff; }
-  .vert-card .tag {
-    display: inline-block;
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    color: var(--color-orange-deep);
-    border: 1px solid rgba(232, 130, 90, 0.4);
-    padding: 3px 10px;
-    margin-bottom: 16px;
-  }
-  .vert-card h3 {
-    margin: 0 0 10px;
-    font-size: 17px;
-    color: var(--color-ink);
-    font-family: var(--font-serif);
-  }
-  .vert-card p {
-    margin: 0;
-    color: var(--color-text-soft);
-    font-size: 13px;
-    line-height: 1.6;
-  }
-
-  /* EQUIPO */
-  .team-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    background: var(--color-line);
-    border: 1px solid var(--color-line);
-    margin: 32px 0 28px;
-  }
-  .team-card {
-    background: var(--color-paper-soft);
-    padding: 28px;
-    position: relative;
-    overflow: hidden;
-    transition: background 0.25s ease;
-  }
-  .team-card:hover { background: #fff; }
-  .team-accent {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--color-orange), var(--color-blue));
-  }
-  .team-card h3 {
-    margin: 0 0 6px;
-    font-size: 18px;
-    color: var(--color-ink);
-    font-family: var(--font-serif);
-  }
-  .team-card .role {
-    margin: 0 0 12px;
-    font-size: 11px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--color-orange-deep);
-    font-weight: 600;
-    font-family: var(--font-mono);
-  }
-  .team-card .focus {
-    margin: 0;
-    font-size: 14px;
-    color: var(--color-text-soft);
-    line-height: 1.6;
-  }
-  .rule {
-    font-size: 14px;
-    color: var(--color-text-soft);
-    border-left: 2px solid var(--color-orange);
-    padding-left: 18px;
-    line-height: 1.65;
-    margin: 0;
-  }
-  .rule strong { color: var(--color-ink); }
-
-  /* CONTACTO — sección tinta */
-  .band-dark {
-    background: var(--color-ink-deep);
-    color: var(--color-paper);
-  }
-  .contact-grid {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 56px;
-    align-items: center;
-  }
-  .contact-mark {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    color: var(--color-paper); /* currentColor → partes "tinta" del monograma se ven claras */
-  }
-  .contact-tag {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    color: rgba(237, 230, 214, 0.6);
-  }
-  .on-dark { color: var(--color-paper) !important; }
-  .eyebrow.on-dark { color: var(--color-orange); }
-  .band-dark .body-lg { color: rgba(237, 230, 214, 0.7); }
-  .contact-list {
-    list-style: none;
-    margin: 28px 0 0;
-    padding: 0;
-    display: grid;
-    gap: 1px;
-    background: rgba(237, 230, 214, 0.12);
-    border: 1px solid rgba(237, 230, 214, 0.12);
-  }
-  .contact-list li {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    padding: 14px 18px;
-    background: var(--color-ink-deep);
-  }
-  .cl-k {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: rgba(237, 230, 214, 0.5);
-    width: 90px;
-    flex-shrink: 0;
-  }
-  .contact-list a {
-    color: var(--color-paper);
-    text-decoration: none;
-    font-size: 16px;
-    transition: color 0.2s;
-  }
-  .contact-list a:hover { color: var(--color-orange); }
-
-  /* CTA */
-  .cta-row { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 13px 26px;
-    font-weight: 600;
-    font-size: 14px;
-    text-decoration: none;
-    letter-spacing: 0.04em;
-    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
-  }
-  .btn:hover { transform: translateY(-2px); }
-  .btn-primary { background: var(--color-orange); color: #fff; }
-  .btn-primary:hover { background: var(--color-orange-deep); }
-  .btn-ghost { border: 1px solid var(--color-line); color: var(--color-ink); }
-  .btn-ghost:hover { border-color: var(--color-orange); }
-
-  /* FOOTER */
   .site-foot {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 8px;
     padding: 24px 6vw;
-    background: var(--color-paper);
+    background: var(--color-bg);
     color: var(--color-mute);
     font-size: 11px;
     letter-spacing: 0.06em;
     border-top: 1px solid var(--color-line);
     font-family: var(--font-mono);
-  }
-
-  @media (max-width: 720px) {
-    .nav-links { gap: 18px; }
-    .nav-links a[href="#servicios"], .nav-links a[href="#framework"] { display: none; }
-    .only-desktop { display: none; }
-    .only-mobile { display: block; }
-    .vert-grid, .team-grid { grid-template-columns: 1fr; }
-    .contact-grid { grid-template-columns: 1fr; gap: 36px; }
-    .hero-coord { display: none; }
   }
 </style>

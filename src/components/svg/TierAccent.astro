@@ -1,0 +1,84 @@
+---
+import type { TierVariant, Accent } from '../../lib/wp';
+
+interface Props {
+  variant: TierVariant;
+  accent: Accent;
+}
+
+const { variant, accent } = Astro.props;
+
+const stroke: Record<Accent, string> = {
+  orange: 'var(--color-orange)',
+  green: 'var(--color-green)',
+  blue: 'var(--color-blue)',
+  ink: 'var(--color-text)',
+};
+
+// Cada variante: un único <path d="…"> para que getTotalLength() sea exacto.
+// scroll.ts dibuja con stroke-dashoffset (DrawSVG libre).
+const paths: Record<TierVariant, string> = {
+  // tier0 — curva cartesiana simple (entrada baja fricción)
+  tier0: 'M 20 220 C 80 200, 140 80, 240 70',
+  // tier1 — onda recurrente (mensual)
+  tier1: 'M 20 140 Q 60 60, 100 140 T 180 140 T 260 140',
+  // tier2 — diagnóstico → roadmap (línea ascendente con nodos)
+  tier2: 'M 20 200 L 80 180 L 80 120 L 160 100 L 160 60 L 260 40',
+  // tier3 — hub-and-spoke (integración multi-flow)
+  tier3: 'M 140 140 L 40 60 M 140 140 L 240 60 M 140 140 L 240 220 M 140 140 L 40 220 M 140 140 L 140 30 M 140 140 L 140 250',
+  // tier4 — loop continuo (mejora continua)
+  tier4: 'M 60 140 C 60 60, 220 60, 220 140 C 220 220, 60 220, 60 140 Z',
+};
+
+const d = paths[variant];
+const color = stroke[accent];
+---
+
+<svg
+  class={`tier-accent ${variant}`}
+  viewBox="0 0 280 280"
+  preserveAspectRatio="xMidYMid meet"
+  aria-hidden="true"
+>
+  {/* Cuadrícula tenue de fondo */}
+  <defs>
+    <pattern id={`grid-${variant}`} width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="var(--color-line)" stroke-width="0.5" />
+    </pattern>
+  </defs>
+  <rect width="280" height="280" fill={`url(#grid-${variant})`} opacity="0.6" />
+
+  {/* Path principal — drawSVG */}
+  <path
+    data-draw
+    d={d}
+    stroke={color}
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+
+  {/* Nodo principal en el origen de la composición */}
+  <circle cx="140" cy="140" r="4" fill={color} class="ta-pulse" />
+</svg>
+
+<style>
+  .tier-accent {
+    width: 100%;
+    height: auto;
+    max-height: 320px;
+    display: block;
+  }
+  .ta-pulse {
+    transform-origin: center;
+    animation: ta-pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes ta-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(0.85); transform-box: fill-box; transform-origin: center; }
+    50% { opacity: 1; transform: scale(1.15); transform-box: fill-box; transform-origin: center; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ta-pulse { animation: none; }
+  }
+</style>

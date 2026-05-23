@@ -22,7 +22,7 @@
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: var(--color-paper);
+    background: var(--color-bg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -47,21 +47,21 @@
     font-weight: 400;
     font-size: clamp(72px, 14vw, 150px);
     line-height: 1;
-    color: var(--color-ink);
+    color: var(--color-text);
     font-variant-numeric: tabular-nums;
     letter-spacing: -0.02em;
   }
   .l-line-wrap {
     width: min(420px, 70vw);
     height: 1px;
-    background: rgba(43, 43, 43, 0.12);
+    background: var(--color-line);
     position: relative;
     overflow: hidden;
   }
   .l-line {
     position: absolute;
     inset: 0;
-    background: var(--color-ink);
+    background: var(--color-text);
     transform-origin: left;
     transform: scaleX(0);
   }
@@ -80,7 +80,7 @@
     gap: 12px;
     margin-top: 12px;
     opacity: 0;
-    pointer-events: none;
+    pointer-events: auto; /* clickable from start — fade es solo visual */
   }
   .l-gate.ready { pointer-events: auto; }
   .l-enter {
@@ -90,7 +90,7 @@
     font-family: var(--font-mono);
     font-size: 12px;
     letter-spacing: 0.18em;
-    color: var(--color-orange);
+    color: var(--color-accent);
     padding: 6px 4px;
     transition: color 0.2s, letter-spacing 0.3s;
   }
@@ -101,7 +101,7 @@
     text-transform: lowercase;
     color: var(--color-text-soft);
   }
-  .l-enter-mute:hover { color: var(--color-ink); }
+  .l-enter-mute:hover { color: var(--color-text); }
 </style>
 
 <script>
@@ -123,10 +123,12 @@
 
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    let revealed = false;
     function reveal(withSound: boolean) {
+      if (revealed) return;
+      revealed = true;
       if (withSound) {
-        startAmbient();
-        dryClick();
+        try { startAmbient(); dryClick(); } catch {}
       }
       gsap.to(loader, {
         opacity: 0,
@@ -135,10 +137,15 @@
         onComplete: () => { loader!.style.display = 'none'; },
       });
       document.documentElement.dataset.entered = 'true';
+      try { sessionStorage.setItem('auda:entered', '1'); } catch {}
     }
 
-    btnSound?.addEventListener('click', () => reveal(true), { once: true });
-    btnMute?.addEventListener('click', () => reveal(false), { once: true });
+    btnSound?.addEventListener('click', () => reveal(true));
+    btnMute?.addEventListener('click', () => reveal(false));
+
+    // Auto-dismiss fail-safe: 8s tras carga, si user no interactúa
+    // entra en modo silencio automático. Evita bloqueo perpetuo.
+    setTimeout(() => reveal(false), 8000);
 
     if (reduce) {
       gsap.set([sub, gate], { opacity: 1 });
@@ -177,8 +184,16 @@
   function boot() {
     if (booted) return;
     booted = true;
+    // Cold-only: si ya entró en esta sesión, saltar loader (no doble en navegación interna)
+    if (sessionStorage.getItem('auda:entered') === '1') {
+      const loader = document.getElementById('loader');
+      if (loader) loader.style.display = 'none';
+      document.documentElement.dataset.entered = 'true';
+      return;
+    }
     runLoader();
   }
   document.addEventListener('astro:page-load', boot);
-  boot();
+  if (document.readyState !== 'loading') boot();
+  else document.addEventListener('DOMContentLoaded', boot);
 </script>

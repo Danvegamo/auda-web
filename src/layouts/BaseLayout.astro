@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 import Loader from '../components/Loader.astro';
+import Cursor from '../components/Cursor.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -17,15 +18,22 @@ const {
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 
+const ogImage = new URL('/og.png', Astro.site).href;
+
 const orgSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'AUDA',
   url: 'https://auda.lat',
+  logo: new URL('/favicon.svg', Astro.site).href,
   description,
   email: 'hola@auda.lat',
   areaServed: 'CO',
   knowsLanguage: ['es'],
+  sameAs: [
+    'https://www.linkedin.com/company/auda-lat',
+    'https://github.com/danvegamo',
+  ],
   makesOffer: [
     { '@type': 'Offer', name: 'Identidad visual + sitio web' },
     { '@type': 'Offer', name: 'Hosting, mantenimiento y soporte' },
@@ -52,7 +60,9 @@ const orgSchema = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="es_CO" />
+    <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -63,12 +73,28 @@ const orgSchema = {
 
     <script type="application/ld+json" is:inline set:html={JSON.stringify(orgSchema)} />
 
+    {/* Pre-paint theme script — evita FOUC en light/dark */}
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('auda:theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var theme = stored || (prefersDark ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+
     <ClientRouter />
   </head>
   <body>
     <Loader />
     <slot />
+    <Cursor />
     <script>
+      import '../scripts/theme.ts';
       import '../scripts/scroll.ts';
     </script>
   </body>

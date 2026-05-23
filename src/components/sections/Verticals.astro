@@ -1,0 +1,67 @@
+---
+interface Props {
+  verticals: { tag: string; title: string; pain: string }[];
+}
+const { verticals } = Astro.props;
+---
+
+<section class="band" id="para-quien">
+  <div class="wrap">
+    <span class="eyebrow" data-reveal="up">Para quién</span>
+    <h2 data-reveal="line">Organizaciones con propósito.</h2>
+    <div class="vert-grid" data-reveal="stagger">
+      {verticals.map((v) => (
+        <article class="vert-card" data-cursor-grow>
+          <span class="tag">{v.tag}</span>
+          <h3>{v.title}</h3>
+          <p>{v.pain}</p>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .vert-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+    margin-top: 40px;
+  }
+  .vert-card {
+    background: var(--color-surface);
+    padding: 28px 24px;
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+  .vert-card:hover {
+    background: var(--color-bg);
+    transform: translateY(-2px);
+  }
+  .tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--color-orange-deep);
+    border: 1px solid rgba(232, 130, 90, 0.4);
+    padding: 3px 10px;
+    margin-bottom: 16px;
+  }
+  .vert-card h3 {
+    margin: 0 0 10px;
+    font-size: 17px;
+    color: var(--color-text);
+    font-family: var(--font-serif);
+  }
+  .vert-card p {
+    margin: 0;
+    color: var(--color-text-soft);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  @media (max-width: 720px) {
+    .vert-grid { grid-template-columns: 1fr; }
+  }
+</style>

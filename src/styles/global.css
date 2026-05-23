@@ -1,55 +1,78 @@
 @import "tailwindcss";
 
+/* -------------------------------------------------------------------
+   Paleta nombrada (fija) — Tailwind v4 @theme la convierte en utilities
+   ------------------------------------------------------------------- */
 @theme {
-  /* Paper / analog environment ------------------------------------ */
-  --color-paper: #ede6d6;       /* fondo principal — papel de alto gramaje */
-  --color-paper-soft: #f4eee1;  /* papel claro para tarjetas/superficies */
-  --color-ink: #2b2b2b;         /* carbón orgánico — texto e interfaz */
-  --color-ink-deep: #161616;    /* tinta densa — titulares fuertes */
+  --color-paper: #ede6d6;         /* fondo claro principal */
+  --color-paper-soft: #f4eee1;    /* superficie clara */
+  --color-ink: #2b2b2b;           /* tinta carbón */
+  --color-ink-deep: #161616;      /* tinta densa / fondo oscuro */
+  --color-ink-soft: #1f1f1f;      /* superficie oscura */
 
-  /* Acentos -------------------------------------------------------- */
-  --color-orange: #e8825a;      /* terracota — nodos activos / variables críticas */
+  --color-orange: #e8825a;        /* acento terracota */
   --color-orange-deep: #d06a44;
-  --color-green: #5c7c5a;       /* verde técnico — datos secundarios */
-  --color-blue: #3e5c76;        /* azul técnico — flujos de metodología */
-
-  /* Aliases semánticos (compat con componentes) -------------------- */
-  --color-bg: var(--color-paper);
-  --color-surface: var(--color-paper-soft);
-  --color-line: rgba(43, 43, 43, 0.12);
-  --color-accent: var(--color-orange);
-  --color-accent-deep: var(--color-orange-deep);
-  --color-text: var(--color-ink);
-  --color-text-soft: rgba(43, 43, 43, 0.62);
-  --color-mute: rgba(43, 43, 43, 0.38);
+  --color-green: #5c7c5a;
+  --color-blue: #3e5c76;
 
   --font-serif: "Fraunces", Georgia, serif;
   --font-sans: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
 }
 
-:root {
+/* -------------------------------------------------------------------
+   Aliases semánticos — los que cambian con el tema
+   Componentes deben usar SIEMPRE estos, nunca la paleta directa.
+   ------------------------------------------------------------------- */
+:root,
+[data-theme="light"] {
   color-scheme: light;
-  /* tono tinta para las líneas del plano de ingeniería */
+  --color-bg: var(--color-paper);
+  --color-surface: var(--color-paper-soft);
+  --color-line: rgba(43, 43, 43, 0.12);
+  --color-text: var(--color-ink);
+  --color-text-soft: rgba(43, 43, 43, 0.62);
+  --color-mute: rgba(43, 43, 43, 0.38);
+  --color-accent: var(--color-orange);
+  --color-accent-deep: var(--color-orange-deep);
   --grid-line: rgba(43, 43, 43, 0.05);
+  --grid-dot: rgba(43, 43, 43, 0.14);
   --grid-size: 44px;
+  --cursor-color: 232, 130, 90;   /* rgb triplet para shader OGL */
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: var(--color-ink-deep);
+  --color-surface: var(--color-ink-soft);
+  --color-line: rgba(237, 230, 214, 0.14);
+  --color-text: #ede6d6;
+  --color-text-soft: rgba(237, 230, 214, 0.65);
+  --color-mute: rgba(237, 230, 214, 0.40);
+  --color-accent: var(--color-orange);
+  --color-accent-deep: var(--color-orange-deep);
+  --grid-line: rgba(237, 230, 214, 0.06);
+  --grid-dot: rgba(237, 230, 214, 0.18);
+  --cursor-color: 232, 130, 90;
 }
 
 html {
-  background: var(--color-paper);
+  background: var(--color-bg);
   overflow-x: hidden;
+  transition: background-color 0.4s ease;
 }
 
 body {
   margin: 0;
   font-family: var(--font-sans);
-  color: var(--color-ink);
-  background: var(--color-paper);
+  color: var(--color-text);
+  background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Plano de ingeniería — cuadrícula matemática 44px sobre papel */
+/* Plano de ingeniería — cuadrícula 44px sobre fondo */
 .auda-lines {
   background-image:
     linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
@@ -57,13 +80,112 @@ body {
   background-size: var(--grid-size) var(--grid-size);
 }
 
-/* Cuadrícula de puntos en las intersecciones (tinta tenue) */
+/* Cuadrícula de puntos en intersecciones */
 .auda-grid {
-  background-image: radial-gradient(circle, rgba(43, 43, 43, 0.14) 1px, transparent 1px);
+  background-image: radial-gradient(circle, var(--grid-dot) 1px, transparent 1px);
   background-size: var(--grid-size) var(--grid-size);
 }
 
-/* revelado de texto / elementos */
+/* ------------------------------------------------------------------
+   Primitivas UI compartidas entre secciones
+   ------------------------------------------------------------------ */
+.band { padding: clamp(80px, 12vw, 140px) 6vw; }
+.wrap { max-width: 1040px; margin: 0 auto; }
+.narrow { max-width: 760px; }
+
+.divider {
+  height: 1px;
+  margin: 0 6vw;
+  background: var(--color-line);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--color-orange-deep);
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+}
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 1px;
+  background: currentColor;
+}
+
+.h2-display,
+.band h2 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(30px, 4.5vw, 52px);
+  line-height: 1.08;
+  padding-bottom: 0.1em;
+  margin: 0 0 32px;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+.section-sub {
+  max-width: 640px;
+  color: var(--color-text-soft);
+  font-size: 15px;
+  margin: 0 0 12px;
+  line-height: 1.65;
+}
+
+.body-lg {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--color-text-soft);
+  margin: 0 0 16px;
+}
+
+.cta-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 13px 26px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-primary { background: var(--color-orange); color: #fff; }
+.btn-primary:hover { background: var(--color-orange-deep); }
+.btn-ghost {
+  border: 1px solid var(--color-line);
+  color: var(--color-text);
+}
+.btn-ghost:hover { border-color: var(--color-orange); }
+
+.band-dark {
+  background: var(--color-ink-deep);
+  color: var(--color-paper);
+}
+.on-dark { color: var(--color-paper) !important; }
+.eyebrow.on-dark { color: var(--color-orange); }
+.band-dark .body-lg { color: rgba(237, 230, 214, 0.7); }
+
+.only-mobile { display: none; }
+@media (max-width: 720px) {
+  .only-desktop { display: none; }
+  .only-mobile { display: block; }
+}
+
+/* Reveal hook (scroll.ts lo controla) */
 [data-reveal] {
   opacity: 0;
 }

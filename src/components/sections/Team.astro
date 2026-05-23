@@ -1,0 +1,85 @@
+---
+interface Props {
+  team: { name: string; role: string; focus: string }[];
+}
+const { team } = Astro.props;
+---
+
+<section class="band" id="equipo">
+  <div class="wrap narrow">
+    <span class="eyebrow" data-reveal="up">Equipo</span>
+    <h2 data-reveal="line">Dos lados complementarios. Ninguno sobra.</h2>
+    <div class="team-grid" data-reveal="stagger">
+      {team.map((m) => (
+        <article class="team-card" data-cursor-grow>
+          <div class="team-accent"></div>
+          <h3>{m.name}</h3>
+          <p class="role">{m.role}</p>
+          <p class="focus">{m.focus}</p>
+        </article>
+      ))}
+    </div>
+    <p class="rule" data-reveal="up">
+      <strong>Regla de oro:</strong> Aura abre y cierra; Dan diagnostica y construye; ambos
+      validan en cada hito. Ningún cliente trabaja con uno solo de los dos.
+    </p>
+  </div>
+</section>
+
+<style>
+  .team-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--color-line);
+    border: 1px solid var(--color-line);
+    margin: 32px 0 28px;
+  }
+  .team-card {
+    background: var(--color-surface);
+    padding: 28px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.25s ease;
+  }
+  .team-card:hover { background: var(--color-bg); }
+  .team-accent {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-orange), var(--color-blue));
+  }
+  .team-card h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+    color: var(--color-text);
+    font-family: var(--font-serif);
+  }
+  .team-card .role {
+    margin: 0 0 12px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--color-orange-deep);
+    font-weight: 600;
+    font-family: var(--font-mono);
+  }
+  .team-card .focus {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-text-soft);
+    line-height: 1.6;
+  }
+  .rule {
+    font-size: 14px;
+    color: var(--color-text-soft);
+    border-left: 2px solid var(--color-orange);
+    padding-left: 18px;
+    line-height: 1.65;
+    margin: 0;
+  }
+  .rule strong { color: var(--color-text); }
+  @media (max-width: 720px) {
+    .team-grid { grid-template-columns: 1fr; }
+  }
+</style>

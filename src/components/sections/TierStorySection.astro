@@ -1,0 +1,151 @@
+---
+import TierAccent from '../svg/TierAccent.astro';
+import type { Tier } from '../../lib/wp';
+
+interface Props { tier: Tier }
+const { tier } = Astro.props;
+---
+
+<section class={`tier-story accent-${tier.accent}`} data-tier-story id={`tier-${tier.n}`}>
+  <div class="ts-wrap">
+    <div class="ts-text">
+      <div class="ts-num-row">
+        <span class="ts-num">{tier.n}</span>
+        <span class="ts-cad">{tier.cadence}</span>
+      </div>
+      <h3 class="ts-title" data-reveal="line">{tier.title}</h3>
+      <p class="ts-sub" data-reveal="up">{tier.subtitle}</p>
+      <ul class="ts-bullets" data-reveal="stagger">
+        {tier.bullets.map((b) => <li>{b}</li>)}
+      </ul>
+      <p class="ts-outcome" data-reveal="up">
+        <span class="ts-arrow" aria-hidden="true">→</span>
+        {tier.outcome}
+      </p>
+      <p class="ts-ticket" data-reveal="up">{tier.ticket}</p>
+    </div>
+    <div class="ts-visual">
+      <TierAccent variant={tier.variant} accent={tier.accent} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .tier-story {
+    padding: clamp(80px, 12vw, 130px) 6vw;
+    border-bottom: 1px solid var(--color-line);
+    position: relative;
+  }
+  .ts-wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .ts-num-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 24px;
+  }
+  .ts-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    font-family: var(--font-serif);
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--color-text);
+    border: 1px solid var(--color-line);
+  }
+  .accent-orange .ts-num { border-color: var(--color-orange); color: var(--color-orange-deep); }
+  .accent-green .ts-num { border-color: var(--color-green); color: var(--color-green); }
+  .accent-blue .ts-num { border-color: var(--color-blue); color: var(--color-blue); }
+  .accent-ink .ts-num { border-color: var(--color-text); }
+
+  .ts-cad {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  .ts-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.08;
+    margin: 0 0 14px;
+    color: var(--color-text);
+    letter-spacing: -0.015em;
+  }
+  .ts-sub {
+    font-size: 16px;
+    color: var(--color-text-soft);
+    margin: 0 0 26px;
+    line-height: 1.5;
+  }
+  .ts-bullets {
+    list-style: none;
+    margin: 0 0 28px;
+    padding: 0;
+    border-left: 1px solid var(--color-line);
+  }
+  .ts-bullets li {
+    padding: 8px 0 8px 18px;
+    color: var(--color-text);
+    font-size: 14px;
+    position: relative;
+  }
+  .ts-bullets li::before {
+    content: '';
+    position: absolute;
+    left: -3px;
+    top: 16px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-orange);
+  }
+  .ts-outcome {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--color-text);
+    margin: 0 0 20px;
+    padding: 18px 22px;
+    background: var(--color-surface);
+    border-left: 3px solid var(--color-orange);
+  }
+  .ts-arrow {
+    color: var(--color-orange);
+    font-style: normal;
+    font-weight: 600;
+  }
+  .ts-ticket {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--color-text-soft);
+    margin: 0;
+  }
+  .ts-visual {
+    position: relative;
+  }
+
+  @media (max-width: 880px) {
+    .ts-wrap {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .ts-visual { order: -1; max-width: 320px; margin: 0 auto; }
+  }
+</style>

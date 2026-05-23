@@ -1,0 +1,37 @@
+---
+interface Props { lines: string[] }
+const { lines } = Astro.props;
+---
+
+<section class="band manifesto" aria-label="Manifiesto">
+  <div class="wrap narrow">
+    <span class="eyebrow" data-reveal="up">Manifiesto</span>
+    <div class="m-lines">
+      {lines.map((l) => (
+        <p class="m-line" data-reveal="line">{l}</p>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .manifesto { padding-top: clamp(60px, 9vw, 110px); padding-bottom: clamp(60px, 9vw, 110px); }
+  .m-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .m-line {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: clamp(26px, 4vw, 44px);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--color-text);
+  }
+  .m-line:last-child {
+    color: var(--color-orange-deep);
+    font-style: italic;
+  }
+</style>
