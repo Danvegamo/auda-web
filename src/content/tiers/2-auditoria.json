@@ -1,0 +1,14 @@
+{
+  "order": 2,
+  "n": "2",
+  "variant": "tier2",
+  "title": "Auditoría AI-first",
+  "subtitle": "El framework AUDA AI Readiness aplicado a tu organización.",
+  "bullets": [
+    "Diagnóstico de procesos críticos",
+    "Mapeo de oportunidades + priorización por ROI",
+    "Roadmap a 12 meses + plan de capacitación"
+  ],
+  "outcome": "Tres entregables en cuatro semanas que valen el ticket aún si paras ahí.",
+  "accent": "blue"
+}

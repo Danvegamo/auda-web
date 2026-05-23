@@ -1,10 +1,20 @@
-// Diseño sonoro — interruptor de atención (Momento A).
-// Estática de baja frecuencia muy tenue + clics secos en interacción.
-// Todo se crea bajo gesto del usuario (autoplay-safe).
+// Diseño sonoro híbrido:
+//   1) Si existe /audio/ambient.mp3 (público), usar HTMLAudioElement con loop.
+//   2) Si no, sintetizar ruido rosa-ish filtrado (autoplay-safe).
+// Toda inicialización ocurre bajo gesto del usuario (botón loader o sound-toggle).
+
+const AMBIENT_URL = '/audio/ambient.mp3';
+const AMBIENT_LEVEL = 0.018;
+const FILE_LEVEL = 0.35;
 
 let ctx: AudioContext | null = null;
-let ambientGain: GainNode | null = null;
+let synthGain: GainNode | null = null;
+let fileEl: HTMLAudioElement | null = null;
+let fileNode: MediaElementAudioSourceNode | null = null;
+let fileGain: GainNode | null = null;
+let mode: 'file' | 'synth' | null = null;
 let started = false;
+let muted = false;
 
 function ensureCtx(): AudioContext | null {
   if (typeof window === 'undefined') return null;
@@ -17,12 +27,17 @@ function ensureCtx(): AudioContext | null {
   return ctx;
 }
 
-export function startAmbient() {
-  const ac = ensureCtx();
-  if (!ac || started) return;
-  started = true;
+async function hasAmbientFile(): Promise<boolean> {
+  if (typeof fetch === 'undefined') return false;
+  try {
+    const res = await fetch(AMBIENT_URL, { method: 'HEAD' });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
 
-  // ruido rosa-ish filtrado a frecuencias bajas
+function startSynth(ac: AudioContext) {
   const bufferSize = 2 * ac.sampleRate;
   const buffer = ac.createBuffer(1, bufferSize, ac.sampleRate);
   const data = buffer.getChannelData(0);
@@ -32,7 +47,6 @@ export function startAmbient() {
     last = (last + 0.02 * white) / 1.02;
     data[i] = last * 3.5;
   }
-
   const noise = ac.createBufferSource();
   noise.buffer = buffer;
   noise.loop = true;
@@ -41,14 +55,47 @@ export function startAmbient() {
   lp.type = 'lowpass';
   lp.frequency.value = 220;
 
-  ambientGain = ac.createGain();
-  ambientGain.gain.value = 0;
+  synthGain = ac.createGain();
+  synthGain.gain.value = 0;
 
-  noise.connect(lp).connect(ambientGain).connect(ac.destination);
+  noise.connect(lp).connect(synthGain).connect(ac.destination);
   noise.start();
+  synthGain.gain.linearRampToValueAtTime(AMBIENT_LEVEL, ac.currentTime + 2.5);
+  mode = 'synth';
+}
 
-  // fade-in muy suave hasta un nivel apenas perceptible
-  ambientGain.gain.linearRampToValueAtTime(0.018, ac.currentTime + 2.5);
+function startFile(ac: AudioContext) {
+  fileEl = new Audio(AMBIENT_URL);
+  fileEl.loop = true;
+  fileEl.preload = 'auto';
+  fileEl.crossOrigin = 'anonymous';
+  fileEl.volume = 1.0;
+
+  fileNode = ac.createMediaElementSource(fileEl);
+  fileGain = ac.createGain();
+  fileGain.gain.value = 0;
+  fileNode.connect(fileGain).connect(ac.destination);
+
+  fileEl.play().catch(() => {
+    // Si el play falla por restricciones, caemos a synth
+    fileEl = null;
+    fileNode = null;
+    fileGain = null;
+    startSynth(ac);
+    return;
+  });
+
+  fileGain.gain.linearRampToValueAtTime(FILE_LEVEL, ac.currentTime + 1.8);
+  mode = 'file';
+}
+
+export async function startAmbient(): Promise<void> {
+  const ac = ensureCtx();
+  if (!ac || started) return;
+  started = true;
+  const hasFile = await hasAmbientFile();
+  if (hasFile) startFile(ac);
+  else startSynth(ac);
 }
 
 export function dryClick() {
@@ -66,23 +113,21 @@ export function dryClick() {
   osc.stop(ac.currentTime + 0.06);
 }
 
-let muted = false;
-const AMBIENT_LEVEL = 0.018;
-
 // Toggle desde la interfaz. Devuelve true si el sonido queda activo.
 export function toggleAmbient(): boolean {
   if (!started) {
-    startAmbient();
+    // fire-and-forget; el async no bloquea el toggle visual
+    void startAmbient();
     muted = false;
     return true;
   }
   muted = !muted;
-  if (ambientGain) {
-    const ac = ensureCtx();
-    ambientGain.gain.linearRampToValueAtTime(
-      muted ? 0 : AMBIENT_LEVEL,
-      (ac?.currentTime ?? 0) + 0.4,
-    );
+  const ac = ensureCtx();
+  const t = ac?.currentTime ?? 0;
+  if (mode === 'synth' && synthGain) {
+    synthGain.gain.linearRampToValueAtTime(muted ? 0 : AMBIENT_LEVEL, t + 0.4);
+  } else if (mode === 'file' && fileGain) {
+    fileGain.gain.linearRampToValueAtTime(muted ? 0 : FILE_LEVEL, t + 0.4);
   }
   return !muted;
 }

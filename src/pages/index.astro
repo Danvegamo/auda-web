@@ -7,7 +7,7 @@ import TierStory from '../components/sections/TierStory.astro';
 import Framework from '../components/sections/Framework.astro';
 import Verticals from '../components/sections/Verticals.astro';
 import Team from '../components/sections/Team.astro';
-import PricingTable from '../components/sections/PricingTable.astro';
+import BookingCTA from '../components/sections/BookingCTA.astro';
 import Contact from '../components/sections/Contact.astro';
 import { getContent } from '../lib/wp';
 
@@ -24,11 +24,7 @@ const c = await getContent();
 
     <About heading={c.about.heading} body={c.about.body} />
 
-    <div class="divider" aria-hidden="true"></div>
-
     <TierStory tiers={c.tiers} />
-
-    <div class="divider" aria-hidden="true"></div>
 
     <section class="band" id="framework">
       <div class="wrap">
@@ -44,15 +40,17 @@ const c = await getContent();
 
     <div class="divider" aria-hidden="true"></div>
 
-    <PricingTable tiers={c.tiers} />
-
-    <div class="divider" aria-hidden="true"></div>
-
     <Verticals verticals={c.verticals} />
 
     <div class="divider" aria-hidden="true"></div>
 
     <Team team={c.team} />
+
+    <BookingCTA
+      calendarUrl={c.contact.calendarUrl}
+      email={c.contact.email}
+      whatsapp={c.contact.whatsapp}
+    />
 
     <Contact email={c.contact.email} whatsapp={c.contact.whatsapp} />
   </main>

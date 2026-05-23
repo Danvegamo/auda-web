@@ -1,0 +1,14 @@
+{
+  "order": 0,
+  "n": "0",
+  "variant": "tier0",
+  "title": "Identidad visual + sitio web",
+  "subtitle": "La puerta de entrada low-friction.",
+  "bullets": [
+    "Logo, paleta y manual de marca",
+    "Sitio institucional en Astro",
+    "Deploy en hosting AUDA"
+  ],
+  "outcome": "Tu organización aparece en internet con presencia coherente y editable.",
+  "accent": "orange"
+}

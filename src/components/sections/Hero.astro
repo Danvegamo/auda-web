@@ -23,7 +23,7 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
     <div class="nav-links">
       <a href="#servicios">Servicios</a>
       <a href="#framework">Metodología</a>
-      <a href="#precios">Precios</a>
+      <a href="#reservar">Reservar</a>
       <button id="sound-toggle" class="sound-toggle" type="button" data-cursor-grow aria-label="Sonido ambiente">
         <span class="st-dot"></span> son.
       </button>
@@ -40,8 +40,8 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
     <h1 data-reveal="type">{tagline}</h1>
     <p class="lead" data-reveal="up">{intro}</p>
     <div class="cta-row" data-reveal="up">
-      <a class="btn btn-primary" href="#servicios" data-cursor-grow>Ver servicios</a>
-      <a class="btn btn-ghost" href={`mailto:${email}`} data-cursor-grow>Hablar con AUDA</a>
+      <a class="btn btn-primary" href="#reservar" data-cursor-grow>Agendar conversación</a>
+      <a class="btn btn-ghost" href="#servicios" data-cursor-grow>Ver capas</a>
     </div>
   </div>
 
@@ -214,7 +214,7 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
     .nav-links { gap: 18px; }
     .nav-links a[href="#servicios"],
     .nav-links a[href="#framework"],
-    .nav-links a[href="#precios"] { display: none; }
+    .nav-links a[href="#reservar"] { display: none; }
     .hero-coord { display: none; }
   }
 </style>

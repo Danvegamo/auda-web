@@ -1,0 +1,501 @@
+---
+import GuideLayout from '../layouts/GuideLayout.astro';
+---
+
+<GuideLayout>
+  <div class="guide">
+    <header class="g-head">
+      <a href="/" class="g-back">← AUDA</a>
+      <h1>Guía de autoría y mejora</h1>
+      <p class="g-lead">
+        Cómo editar el contenido del sitio sin tocar código, dónde poner el audio, cómo
+        conectar Google Calendar, qué viene después y referencias para seguir profundizando.
+      </p>
+    </header>
+
+    <nav class="g-toc" aria-label="Tabla de contenido">
+      <span class="g-toc-key">ÍNDICE</span>
+      <ol>
+        <li><a href="#quickstart">1 · Quickstart</a></li>
+        <li><a href="#contenido">2 · Editar contenido</a></li>
+        <li><a href="#audio">3 · Subir audio</a></li>
+        <li><a href="#calendar">4 · Link de Google Calendar</a></li>
+        <li><a href="#roadmap">5 · Roadmap de mejora</a></li>
+        <li><a href="#referencias">6 · Referencias</a></li>
+        <li><a href="#mejoras">7 · Mejoras detectadas</a></li>
+      </ol>
+    </nav>
+
+    <main>
+      <!-- 1 · QUICKSTART -->
+      <section id="quickstart">
+        <span class="g-eyebrow">01 · Quickstart</span>
+        <h2>Correr el sitio localmente</h2>
+        <pre><code>cd /home/danvegamo/auda-web
+npm install
+npm run dev</code></pre>
+        <p>
+          Astro arranca en <code>http://localhost:4321</code>. Cualquier cambio en
+          <code>src/content/**/*.json</code> recarga en caliente.
+        </p>
+        <p>Para build de producción y preview:</p>
+        <pre><code>npm run build
+npm run preview</code></pre>
+      </section>
+
+      <!-- 2 · CONTENIDO -->
+      <section id="contenido">
+        <span class="g-eyebrow">02 · Editar contenido</span>
+        <h2>Estructura de Content Collections</h2>
+        <p>
+          Todo el texto del sitio vive en <code>src/content/</code> como archivos JSON,
+          validados por el schema en <a href="https://github.com" class="ext">src/content/config.ts</a>.
+          Cada colección tiene un esquema typed: si pones algo mal, el build falla con
+          mensaje claro.
+        </p>
+
+        <table class="g-table">
+          <thead>
+            <tr><th>Colección</th><th>Archivo</th><th>Campos</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>site</code></td>
+              <td><code>src/content/site/index.json</code></td>
+              <td>tagline, intro, manifesto.lines[], about.heading, about.body[], contact.email, contact.whatsapp, contact.calendarUrl</td>
+            </tr>
+            <tr>
+              <td><code>tiers</code></td>
+              <td><code>src/content/tiers/N.json</code></td>
+              <td>order, n, variant (tier0–tier4), title, subtitle, bullets[], outcome, accent (orange/green/blue/ink)</td>
+            </tr>
+            <tr>
+              <td><code>verticals</code></td>
+              <td><code>src/content/verticals/X.json</code></td>
+              <td>order, tag, title, pain</td>
+            </tr>
+            <tr>
+              <td><code>team</code></td>
+              <td><code>src/content/team/X.json</code></td>
+              <td>order, name, role, focus</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h3>Ejemplo — añadir un nuevo tier</h3>
+        <p>Crear <code>src/content/tiers/5-nuevo.json</code>:</p>
+        <pre><code>{`{`}
+  "order": 5,
+  "n": "5",
+  "variant": "tier4",
+  "title": "Nombre del servicio",
+  "subtitle": "Una línea que lo explique.",
+  "bullets": [
+    "Entregable uno",
+    "Entregable dos",
+    "Entregable tres"
+  ],
+  "outcome": "El resultado tangible para la organización.",
+  "accent": "blue"
+{`}`}</code></pre>
+        <p>
+          El campo <code>order</code> controla la posición. <code>accent</code> define el color
+          (terracota/verde/azul/tinta). El sitio se reordena solo.
+        </p>
+
+        <h3>Ejemplo — cambiar el manifesto</h3>
+        <p>Editar <code>src/content/site/index.json</code>, sección <code>manifesto.lines</code>:</p>
+        <pre><code>"manifesto": {`{`}
+  "lines": [
+    "Una nueva línea.",
+    "Otra línea más."
+  ]
+{`}`}</code></pre>
+      </section>
+
+      <!-- 3 · AUDIO -->
+      <section id="audio">
+        <span class="g-eyebrow">03 · Audio</span>
+        <h2>Subir tu archivo de audio ambient</h2>
+        <p>
+          El sitio tiene dos modos de audio que se eligen automáticamente:
+        </p>
+        <ol>
+          <li><strong>Archivo</strong> — si existe <code>public/audio/ambient.mp3</code>, lo usa con <code>&lt;audio loop&gt;</code>.</li>
+          <li><strong>Sintetizado</strong> — fallback (Web Audio API, pink noise filtrado). Ya funciona sin tocar nada.</li>
+        </ol>
+        <p>Para subir tu archivo:</p>
+        <pre><code>cp tu-audio.mp3 /home/danvegamo/auda-web/public/audio/ambient.mp3</code></pre>
+        <p><strong>Recomendaciones de masterización:</strong></p>
+        <ul>
+          <li>Formato MP3 (CBR 192 kbps) o OGG Vorbis para mejor compresión.</li>
+          <li>Loop seamless — corta en zero-crossings para evitar el clic.</li>
+          <li>Loudness alrededor de <code>-14 LUFS</code>, peak <code>&lt; -1 dBTP</code>.</li>
+          <li>Duración 30s–2min, archivo <code>&lt; 4 MB</code>.</li>
+          <li>Si quieres usar OGG: cambia <code>AMBIENT_URL</code> en <code>src/scripts/audio.ts</code>.</li>
+        </ul>
+        <p><strong>Dónde verificar:</strong> click en <code>son.</code> en la nav, o en el loader inicial el botón "ACTIVAR ENTORNO ACÚSTICO".</p>
+      </section>
+
+      <!-- 4 · CALENDAR -->
+      <section id="calendar">
+        <span class="g-eyebrow">04 · Google Calendar</span>
+        <h2>Conectar tu link de reservas</h2>
+        <ol>
+          <li>Entra a <a href="https://calendar.google.com" class="ext" target="_blank">calendar.google.com</a>.</li>
+          <li>Click en <em>+ Create</em> → <em>Appointment schedule</em>.</li>
+          <li>Define duración (recomendado 30 min), disponibilidad semanal, buffer entre citas, video conferencia (Google Meet).</li>
+          <li>En el paso final, copia el link público (<code>calendar.app.google/...</code>).</li>
+          <li>Pégalo en <code>src/content/site/index.json</code>:</li>
+        </ol>
+        <pre><code>"contact": {`{`}
+  "email": "hola@auda.lat",
+  "whatsapp": "+57 311 7047088",
+  "calendarUrl": "https://calendar.app.google/TU-LINK-AQUI"
+{`}`}</code></pre>
+        <p>
+          El botón <strong>[ AGENDAR CONVERSACIÓN ]</strong> en la sección <code>#reservar</code> lo abrirá
+          en una nueva pestaña.
+        </p>
+      </section>
+
+      <!-- 5 · ROADMAP -->
+      <section id="roadmap">
+        <span class="g-eyebrow">05 · Roadmap</span>
+        <h2>Próximas mejoras priorizadas</h2>
+
+        <div class="g-milestone">
+          <span class="g-milestone-tag">M1 · Esta semana</span>
+          <h3>SEO técnico completo</h3>
+          <ul>
+            <li>Sitemap dinámico (ya hay <code>@astrojs/sitemap</code> — verificar generación).</li>
+            <li>Metas dinámicas por sección (Open Graph + Twitter Card por route).</li>
+            <li>JSON-LD <code>ProfessionalService</code> + <code>Service[]</code> por cada tier (hoy solo Organization).</li>
+            <li>Imagen <code>og.png</code> con branding (referenciada en BaseLayout pero falta el archivo).</li>
+          </ul>
+        </div>
+
+        <div class="g-milestone">
+          <span class="g-milestone-tag">M2 · Mes 1</span>
+          <h3>Casos de estudio</h3>
+          <ul>
+            <li>Nueva colección <code>cases</code> con <code>title</code>, <code>client</code>, <code>industry</code>, <code>problem</code>, <code>solution</code>, <code>impact</code>, <code>quote</code>.</li>
+            <li>Página <code>/casos</code> con índice + <code>/casos/[slug]</code> con detalle.</li>
+            <li>Dar dos casos reales antes de publicar.</li>
+          </ul>
+        </div>
+
+        <div class="g-milestone">
+          <span class="g-milestone-tag">M3 · Mes 2</span>
+          <h3>Blog / insights</h3>
+          <ul>
+            <li>Colección <code>posts</code> con MDX (instalar <code>@astrojs/mdx</code>).</li>
+            <li>RSS feed automático.</li>
+            <li>Listado con filtros por tag.</li>
+          </ul>
+        </div>
+
+        <div class="g-milestone">
+          <span class="g-milestone-tag">M4 · Mes 3</span>
+          <h3>Internacionalización (ES → EN)</h3>
+          <ul>
+            <li>Astro i18n routing (<code>/en/</code>).</li>
+            <li>Duplicar Content Collections con sufijo de idioma o <code>locale</code> field.</li>
+            <li>Switch de idioma en nav.</li>
+          </ul>
+        </div>
+
+        <div class="g-milestone">
+          <span class="g-milestone-tag">M5 · Mes 3</span>
+          <h3>Analytics privacy-first</h3>
+          <ul>
+            <li>Plausible Analytics self-hosted (cabe en el stack Docker existente del servidor).</li>
+            <li>Sin cookies, GDPR-clean.</li>
+            <li>Tracking de conversión: clicks al botón de calendar.</li>
+          </ul>
+        </div>
+
+        <div class="g-milestone">
+          <span class="g-milestone-tag">M6 · Mes 4+</span>
+          <h3>CMS visual (opcional)</h3>
+          <ul>
+            <li>Decap CMS apuntando a este repo de git.</li>
+            <li>Solo justifica si Aura o un tercero editan con frecuencia.</li>
+            <li>Alternativa: aplicar Tina CMS para edición inline.</li>
+          </ul>
+        </div>
+
+        <div class="g-milestone">
+          <span class="g-milestone-tag">M7 · Continuo</span>
+          <h3>Refinamiento de animaciones</h3>
+          <ul>
+            <li>WebGL ambient backdrop en hero (shader con noise).</li>
+            <li>Cursor reactivo a tipo de contenido (texto/visual/CTA).</li>
+            <li>Transiciones entre rutas con View Transitions (ya está <code>ClientRouter</code>).</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 6 · REFERENCIAS -->
+      <section id="referencias">
+        <span class="g-eyebrow">06 · Referencias</span>
+        <h2>Recursos para seguir por tu cuenta</h2>
+
+        <h3>Animación scroll-driven</h3>
+        <ul class="g-links">
+          <li><a class="ext" target="_blank" href="https://gsap.com/docs/v3/Plugins/ScrollTrigger/">GSAP ScrollTrigger docs</a> — la base de todo lo que hace pinning aquí.</li>
+          <li><a class="ext" target="_blank" href="https://tympanus.net/codrops/">Codrops</a> — laboratorio de efectos web, muchos demos open-source.</li>
+          <li><a class="ext" target="_blank" href="https://lenis.darkroom.engineering/">Lenis (smooth scroll)</a> — librería que estamos usando.</li>
+          <li><a class="ext" target="_blank" href="https://developer.chrome.com/docs/css-ui/scroll-driven-animations">Scroll-driven animations (CSS)</a> — futuro estándar nativo del navegador.</li>
+        </ul>
+
+        <h3>Inspiración cinematográfica</h3>
+        <ul class="g-links">
+          <li><a class="ext" target="_blank" href="https://linear.app">linear.app</a> — tipografía + transitions sutiles.</li>
+          <li><a class="ext" target="_blank" href="https://vercel.com">vercel.com</a> — pinning, dark/light, mucho WebGL.</li>
+          <li><a class="ext" target="_blank" href="https://www.anthropic.com">anthropic.com</a> — editorial, calma, minimalismo serio.</li>
+          <li><a class="ext" target="_blank" href="https://www.palantir.com">palantir.com</a> — referente directo del posicionamiento forward-deployed.</li>
+          <li><a class="ext" target="_blank" href="https://igloo.inc">igloo.inc</a> — scroll cinemático extremo, ejemplo de "traveling".</li>
+        </ul>
+
+        <h3>Diseño editorial</h3>
+        <ul class="g-links">
+          <li><a class="ext" target="_blank" href="https://www.pentagram.com">Pentagram</a> — case studies de branding editorial.</li>
+          <li><a class="ext" target="_blank" href="https://fonts.google.com/specimen/Fraunces">Fraunces type specimen</a> — la serif que usamos.</li>
+          <li><a class="ext" target="_blank" href="https://utopia.fyi">Utopia fluid type</a> — escalas tipográficas responsive.</li>
+        </ul>
+
+        <h3>Astro</h3>
+        <ul class="g-links">
+          <li><a class="ext" target="_blank" href="https://docs.astro.build/en/guides/content-collections/">Content Collections</a> — formato de los .json.</li>
+          <li><a class="ext" target="_blank" href="https://docs.astro.build/en/guides/view-transitions/">View Transitions</a> — ya está habilitado vía ClientRouter.</li>
+          <li><a class="ext" target="_blank" href="https://docs.astro.build/en/recipes/i18n/">i18n recipe</a> — base para multilingüe.</li>
+        </ul>
+
+        <h3>Audio</h3>
+        <ul class="g-links">
+          <li><a class="ext" target="_blank" href="https://freesound.org">Freesound.org</a> — biblioteca CC para drones y ambientes.</li>
+          <li><a class="ext" target="_blank" href="https://www.audacityteam.org/">Audacity</a> — para cortar loops seamless y normalizar LUFS.</li>
+        </ul>
+      </section>
+
+      <!-- 7 · MEJORAS DETECTADAS -->
+      <section id="mejoras">
+        <span class="g-eyebrow">07 · Mejoras</span>
+        <h2>Puntos detectados al revisar el código</h2>
+        <ul class="g-checklist">
+          <li><strong>Performance móvil</strong> — el pinning cinematic respeta breakpoint 880px pero falta auditar Lighthouse mobile real (objetivo: Performance ≥ 85).</li>
+          <li><strong>Lazy-load WebGL</strong> — el cursor OGL ya solo carga en desktop tras primer mousemove. Bien.</li>
+          <li><strong>Fuentes Google</strong> — generan CLS. Considerar self-host con <code>@fontsource/fraunces</code>, <code>@fontsource/inter</code>, <code>@fontsource/jetbrains-mono</code>.</li>
+          <li><strong>Imagen Open Graph</strong> — <code>/og.png</code> está referenciada en BaseLayout pero no existe en <code>public/</code>. Crear una 1200×630.</li>
+          <li><strong>Accesibilidad</strong> — auditar contraste en modo oscuro (color-mute en fondos surface), focus visible en botones de loader.</li>
+          <li><strong>Reduce-motion</strong> — verificar que con <code>prefers-reduced-motion: reduce</code> todo el contenido del tier-story sigue visible (la nueva timeline lo gestiona; revisar).</li>
+          <li><strong>Cursor en links externos</strong> — el cursor escala 2.2x pero el cursor nativo también sigue visible; está OK por accesibilidad. Documentado.</li>
+          <li><strong>Botón sonido en hero</strong> — funciona pero no indica si está en modo file vs synth. Pequeño tooltip ayudaría.</li>
+          <li><strong>Schema.org</strong> — hoy solo <code>Organization</code>. Añadir <code>FAQPage</code> + <code>Service</code> por cada tier mejora SEO.</li>
+          <li><strong>Errores 404</strong> — falta página <code>src/pages/404.astro</code> custom.</li>
+          <li><strong>Cookies / consent</strong> — si entra Plausible (cookie-less) no es necesario; con cualquier otra herramienta hay que añadir banner.</li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="g-foot">
+      AUDA · Guía generada para edición rápida · acceso interno
+    </footer>
+  </div>
+</GuideLayout>
+
+<style>
+  .guide {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 56px 28px 120px;
+    font-family: var(--font-sans);
+    color: var(--color-text);
+    line-height: 1.65;
+  }
+  .g-head { margin-bottom: 48px; }
+  .g-back {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--color-orange-deep);
+    text-decoration: none;
+    margin-bottom: 24px;
+  }
+  .g-back:hover { color: var(--color-text); }
+  .g-head h1 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(32px, 5vw, 48px);
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+  }
+  .g-lead {
+    font-size: 17px;
+    color: var(--color-text-soft);
+    margin: 0;
+    max-width: 640px;
+  }
+  .g-toc {
+    border: 1px solid var(--color-line);
+    padding: 20px 24px;
+    margin-bottom: 56px;
+    background: var(--color-surface);
+  }
+  .g-toc-key {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+    display: block;
+    margin-bottom: 12px;
+  }
+  .g-toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    columns: 2;
+    gap: 16px;
+  }
+  .g-toc li { margin-bottom: 6px; }
+  .g-toc a {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  .g-toc a:hover { color: var(--color-orange-deep); }
+  section {
+    margin: 0 0 72px;
+    scroll-margin-top: 24px;
+  }
+  .g-eyebrow {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-orange-deep);
+    margin-bottom: 12px;
+  }
+  section h2 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(24px, 3.5vw, 34px);
+    margin: 0 0 20px;
+    letter-spacing: -0.015em;
+    color: var(--color-text);
+  }
+  section h3 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 18px;
+    margin: 28px 0 12px;
+    color: var(--color-text);
+  }
+  section p { margin: 0 0 14px; color: var(--color-text-soft); }
+  section ul, section ol { margin: 0 0 14px; padding-left: 22px; color: var(--color-text-soft); }
+  section li { margin-bottom: 6px; }
+  code {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    background: var(--color-surface);
+    padding: 1px 6px;
+    border: 1px solid var(--color-line);
+    color: var(--color-text);
+  }
+  pre {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 0 0 16px;
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: pre;
+  }
+  .ext::after { content: ' ↗'; font-size: 0.8em; opacity: 0.6; }
+  a { color: var(--color-orange-deep); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  a:hover { color: var(--color-text); }
+
+  .g-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13px;
+  }
+  .g-table th, .g-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-line);
+    vertical-align: top;
+  }
+  .g-table th {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+    background: var(--color-surface);
+  }
+
+  .g-milestone {
+    border-left: 2px solid var(--color-orange);
+    padding: 4px 0 4px 18px;
+    margin: 0 0 28px;
+  }
+  .g-milestone-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--color-orange-deep);
+    margin-bottom: 6px;
+  }
+  .g-milestone h3 { margin-top: 4px; }
+
+  .g-links li { margin-bottom: 8px; }
+
+  .g-checklist {
+    list-style: none;
+    padding: 0;
+  }
+  .g-checklist li {
+    padding: 10px 0 10px 26px;
+    border-bottom: 1px solid var(--color-line);
+    position: relative;
+    color: var(--color-text);
+  }
+  .g-checklist li::before {
+    content: '☐';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    color: var(--color-orange);
+    font-family: var(--font-mono);
+  }
+  .g-checklist strong { color: var(--color-text); }
+
+  .g-foot {
+    margin-top: 64px;
+    padding-top: 28px;
+    border-top: 1px solid var(--color-line);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--color-mute);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 640px) {
+    .g-toc ol { columns: 1; }
+  }
+</style>

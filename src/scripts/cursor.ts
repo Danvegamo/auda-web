@@ -13,7 +13,13 @@ function readColor(): [number, number, number] {
   const raw = getComputedStyle(document.documentElement).getPropertyValue('--cursor-color').trim();
   if (!raw) return [0.91, 0.51, 0.35];
   const parts = raw.split(',').map((s) => parseFloat(s) / 255);
-  return [parts[0] || 0.91, parts[1] || 0.51, parts[2] || 0.35];
+  return [parts[0] || 0, parts[1] || 0, parts[2] || 0];
+}
+
+function readMode(): number {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue('--cursor-mode').trim();
+  const n = parseFloat(raw);
+  return Number.isFinite(n) ? n : 0;
 }
 
 const vertex = /* glsl */ `
@@ -33,6 +39,7 @@ const fragment = /* glsl */ `
   uniform vec3 uColor;
   uniform float uScale;
   uniform float uTime;
+  uniform float uSolid;
   varying vec2 vUv;
 
   void main() {
@@ -41,22 +48,24 @@ const fragment = /* glsl */ `
     vec2 d = p - m;
     d.x *= uResolution.x / uResolution.y;
     float dist = length(d);
-    float r = 0.055 * uScale;
 
-    // Núcleo + halo radial con falloff suave
-    float core = smoothstep(r, r * 0.05, dist);
-    float halo = smoothstep(r * 4.2, r * 0.9, dist) * 0.22;
-    float alpha = core * 0.55 + halo;
-
-    // Degradé interno: tono más cálido al centro, base hacia el borde
-    vec3 hot = uColor * 1.15;
-    vec3 base = uColor * 0.75;
-    vec3 col = mix(base, hot, smoothstep(r, 0.0, dist));
-
-    // Sutil oscilación de brillo
-    alpha *= 0.92 + 0.08 * sin(uTime * 1.6);
-
-    gl_FragColor = vec4(col, alpha);
+    if (uSolid > 0.5) {
+      // Disco sólido — edge crisp, sin halo, sin oscilación, ligeramente más grande
+      float r = 0.012 * uScale;
+      float alpha = smoothstep(r * 1.05, r * 0.9, dist);
+      gl_FragColor = vec4(uColor, alpha);
+    } else {
+      // Modo halo (oscuro): núcleo cálido + radial falloff + oscilación
+      float r = 0.055 * uScale;
+      float core = smoothstep(r, r * 0.05, dist);
+      float halo = smoothstep(r * 4.2, r * 0.9, dist) * 0.22;
+      float alpha = core * 0.55 + halo;
+      vec3 hot = uColor * 1.15;
+      vec3 base = uColor * 0.75;
+      vec3 col = mix(base, hot, smoothstep(r, 0.0, dist));
+      alpha *= 0.92 + 0.08 * sin(uTime * 1.6);
+      gl_FragColor = vec4(col, alpha);
+    }
   }
 `;
 
@@ -81,6 +90,7 @@ function boot() {
       uResolution: { value: [window.innerWidth, window.innerHeight] },
       uColor: { value: readColor() },
       uScale: { value: 1.0 },
+      uSolid: { value: readMode() },
     },
     transparent: true,
   });
@@ -94,8 +104,8 @@ function boot() {
   window.addEventListener('resize', resize);
 
   const mouse = { x: 0.5, y: 0.5 };
-  const toX = gsap.quickTo(mouse, 'x', { duration: 0.35, ease: 'power3' });
-  const toY = gsap.quickTo(mouse, 'y', { duration: 0.35, ease: 'power3' });
+  const toX = gsap.quickTo(mouse, 'x', { duration: 0.25, ease: 'power3' });
+  const toY = gsap.quickTo(mouse, 'y', { duration: 0.25, ease: 'power3' });
 
   window.addEventListener(
     'mousemove',
@@ -118,6 +128,7 @@ function boot() {
 
   document.addEventListener('auda:themechange', () => {
     program.uniforms.uColor.value = readColor();
+    program.uniforms.uSolid.value = readMode();
   });
 
   const start = performance.now();

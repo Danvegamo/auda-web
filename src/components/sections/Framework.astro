@@ -1,55 +1,125 @@
 ---
 const phases = [
-  { id: 'R1', name: 'Read', desc: 'Diagnóstico organizacional: procesos, dolor, datos, madurez.' },
-  { id: 'R2', name: 'Rank', desc: 'Priorización por ROI: 5–8 oportunidades de IA con quick-wins.' },
-  { id: 'R3', name: 'Roadmap', desc: 'Plan a 12 meses: cronograma, capacitación, presupuesto, KPIs.' },
-  { id: 'R4', name: 'Run', desc: 'Implementación embebida: IA operando, equipo entrenado.' },
-  { id: 'R5', name: 'Refine', desc: 'Mejora continua: iteraciones, nuevos casos, monitoreo.' },
+  { id: 'R1', name: 'Read', pct: 20, desc: 'Diagnóstico organizacional: procesos, dolor, datos, madurez.' },
+  { id: 'R2', name: 'Rank', pct: 40, desc: 'Priorización por ROI: 5–8 oportunidades de IA con quick-wins.' },
+  { id: 'R3', name: 'Roadmap', pct: 60, desc: 'Plan a 12 meses: cronograma, capacitación, presupuesto, KPIs.' },
+  { id: 'R4', name: 'Run', pct: 80, desc: 'Implementación embebida: IA operando, equipo entrenado.' },
+  { id: 'R5', name: 'Refine', pct: 100, desc: 'Mejora continua: iteraciones, nuevos casos, monitoreo.' },
 ];
 ---
 
 <div class="framework-wrap">
-  <!-- SVG line drawn with scroll -->
-  <svg class="fw-line" viewBox="0 0 800 2" preserveAspectRatio="none" aria-hidden="true">
-    <path
-      data-draw
-      d="M 0 1 L 800 1"
-      stroke="rgba(232,130,90,0.5)"
-      stroke-width="1"
-      stroke-dasharray="6 6"
-      fill="none"
-    />
-  </svg>
+  <div class="fw-yaxis" aria-hidden="true">
+    <span>Índice de madurez AI</span>
+  </div>
 
-  <ol class="framework">
-    {
-      phases.map((p, i) => (
-        <li class="phase" style={`--i:${i}`} data-reveal="up">
-          <div class="dot">
-            <span class="dot-id">{p.id}</span>
-          </div>
-          <h4>{p.name}</h4>
-          <p>{p.desc}</p>
-        </li>
-      ))
-    }
-  </ol>
+  <div class="fw-canvas">
+    <!-- Eje horizontal + ticks + labels -->
+    <svg class="fw-line" viewBox="0 0 1000 80" preserveAspectRatio="none" aria-hidden="true">
+      <!-- Eje base dashed -->
+      <path
+        data-draw
+        d="M 0 60 L 1000 60"
+        stroke="rgba(232,130,90,0.5)"
+        stroke-width="1"
+        stroke-dasharray="6 6"
+        fill="none"
+      />
+      <!-- Ticks verticales cada 20% -->
+      {phases.map((p) => (
+        <line x1={p.pct * 10} y1="50" x2={p.pct * 10} y2="68"
+          stroke="var(--color-line-stroke, rgba(43,43,43,0.3))" stroke-width="1" />
+      ))}
+      <!-- Curva de crecimiento punteada -->
+      <path
+        d="M 0 70 Q 250 55 500 38 T 1000 8"
+        stroke="rgba(232,130,90,0.25)"
+        stroke-width="1"
+        stroke-dasharray="2 4"
+        fill="none"
+      />
+    </svg>
+
+    <!-- Labels sobre eje X -->
+    <div class="fw-xlabels">
+      {phases.map((p) => (
+        <span class="fw-xlabel" style={`left:${p.pct}%`}>
+          {p.name.toUpperCase()} <em>{p.pct}%</em>
+        </span>
+      ))}
+    </div>
+
+    <ol class="framework">
+      {
+        phases.map((p, i) => (
+          <li class="phase" style={`--i:${i}`} data-reveal="up">
+            <div class="dot">
+              <span class="dot-id">{p.id}</span>
+            </div>
+            <h4>{p.name}</h4>
+            <p>{p.desc}</p>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
 </div>
 
 <style>
   .framework-wrap {
     position: relative;
-    padding-top: 8px;
+    margin-top: 32px;
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 18px;
+  }
+  .fw-yaxis {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+    border-left: 1px solid var(--color-line);
+    padding: 8px 0;
+  }
+  .fw-canvas {
+    position: relative;
+    padding-top: 60px;
   }
   .fw-line {
     position: absolute;
-    top: 30px;
-    left: 4%;
-    right: 4%;
-    width: 92%;
-    height: 2px;
+    top: 14px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 80px;
     pointer-events: none;
     z-index: 0;
+  }
+  .fw-xlabels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 18px;
+    z-index: 1;
+  }
+  .fw-xlabel {
+    position: absolute;
+    transform: translateX(-50%);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: var(--color-text-soft);
+    white-space: nowrap;
+  }
+  .fw-xlabel em {
+    font-style: normal;
+    color: var(--color-orange-deep);
+    margin-left: 6px;
   }
   .framework {
     list-style: none;
@@ -59,10 +129,10 @@ const phases = [
     grid-template-columns: repeat(5, 1fr);
     gap: 16px;
     position: relative;
+    z-index: 2;
   }
   .phase {
     position: relative;
-    z-index: 1;
     text-align: center;
   }
   .dot {
@@ -72,7 +142,7 @@ const phases = [
     width: 46px;
     height: 46px;
     border-radius: 50%;
-    border: 1px solid rgba(232,130,90,0.4);
+    border: 1px solid rgba(232, 130, 90, 0.4);
     background: var(--color-surface);
     margin-bottom: 16px;
     position: relative;
@@ -82,7 +152,7 @@ const phases = [
     position: absolute;
     inset: -4px;
     border-radius: 50%;
-    border: 1px solid rgba(232,130,90,0.12);
+    border: 1px solid rgba(232, 130, 90, 0.12);
   }
   .dot-id {
     font-family: var(--font-mono);
@@ -117,7 +187,10 @@ const phases = [
   }
 
   @media (max-width: 720px) {
-    .fw-line { display: none; }
+    .framework-wrap { grid-template-columns: 1fr; }
+    .fw-yaxis { display: none; }
+    .fw-line, .fw-xlabels { display: none; }
+    .fw-canvas { padding-top: 0; }
     .framework {
       grid-template-columns: 1fr;
       gap: 24px;

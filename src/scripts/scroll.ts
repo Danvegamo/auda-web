@@ -29,7 +29,6 @@ function initLenis(): Lenis {
   gsap.ticker.lagSmoothing(0);
   window.__lenis = lenis;
 
-  // Hooks para View Transitions — pausa scroll durante swap.
   document.addEventListener('astro:before-swap', () => {
     window.__lenis?.stop();
   });
@@ -45,7 +44,10 @@ function wrapLines(el: Element): HTMLElement[] {
   const text = el.textContent ?? '';
   const words = text.split(' ');
   el.innerHTML = words
-    .map((w) => `<span class="word" style="display:inline-block;overflow:hidden"><span class="word-inner" style="display:inline-block">${w}&nbsp;</span></span>`)
+    .map(
+      (w) =>
+        `<span class="word" style="display:inline-block;overflow:hidden"><span class="word-inner" style="display:inline-block">${w}&nbsp;</span></span>`,
+    )
     .join('');
   return Array.from(el.querySelectorAll<HTMLElement>('.word-inner'));
 }
@@ -119,8 +121,7 @@ function initType() {
 function initDrawLine() {
   gsap.utils.toArray<SVGPathElement>('[data-draw]').forEach((path) => {
     if (path.dataset.drawBound) return;
-    // Skip paths inside TierStorySection — initTierStory las orquesta con pin+scrub
-    if (path.closest('[data-tier-story]')) return;
+    if (path.closest('[data-cinematic]')) return; // las cinematic sections orquestan sus paths
     path.dataset.drawBound = '1';
     const length = path.getTotalLength();
     gsap.set(path, { strokeDasharray: length, strokeDashoffset: length });
@@ -132,35 +133,41 @@ function initDrawLine() {
   });
 }
 
-function initTierStory() {
+// Animación cinematográfica: cada sección con data-cinematic se pinea,
+// el visual interno hace "traveling" (escala + blur), texto aparece como horizonte,
+// y un fade-gate de fondo cierra la sección antes de soltar el pin.
+function initCinematic() {
   const mobile = window.matchMedia('(max-width: 880px)').matches;
 
-  gsap.utils.toArray<HTMLElement>('[data-tier-story]').forEach((sec) => {
-    if (sec.dataset.tierBound) return;
-    sec.dataset.tierBound = '1';
+  gsap.utils.toArray<HTMLElement>('[data-cinematic]').forEach((sec) => {
+    if (sec.dataset.cinematicBound) return;
+    sec.dataset.cinematicBound = '1';
 
-    const path = sec.querySelector<SVGPathElement>('[data-draw]');
+    const visual = sec.querySelector<HTMLElement>('.ts-visual');
+    const text = sec.querySelector<HTMLElement>('.ts-text');
+    const axis = sec.querySelector<HTMLElement>('.ts-axis');
+    const fadeGate = sec.querySelector<HTMLElement>('.ts-fade-gate');
+    const title = sec.querySelector<HTMLElement>('.ts-title');
+    const sub = sec.querySelector<HTMLElement>('.ts-sub');
     const bullets = sec.querySelectorAll<HTMLElement>('.ts-bullets li');
     const outcome = sec.querySelector<HTMLElement>('.ts-outcome');
-    const ticket = sec.querySelector<HTMLElement>('.ts-ticket');
 
-    if (path) {
-      const len = path.getTotalLength();
-      gsap.set(path, { strokeDasharray: len, strokeDashoffset: len });
-    }
-    if (bullets.length) gsap.set(bullets, { opacity: 0, y: 18 });
-    if (outcome) gsap.set(outcome, { opacity: 0, y: 16 });
-    if (ticket) gsap.set(ticket, { opacity: 0 });
+    // Estado inicial
+    gsap.set([title, sub, outcome], { opacity: 0, y: 24 });
+    if (bullets.length) gsap.set(bullets, { opacity: 0, y: 20 });
+    if (axis) gsap.set(axis, { opacity: 0, x: -12 });
+    if (visual) gsap.set(visual, { scale: 0.55, filter: 'blur(8px)', opacity: 0.4 });
+    if (fadeGate) gsap.set(fadeGate, { opacity: 0 });
 
     if (mobile) {
-      // Fallback móvil: revelado simple sin pin
       const tl = gsap.timeline({
         scrollTrigger: { trigger: sec, start: 'top 80%', toggleActions: 'play none none none' },
       });
-      if (path) tl.to(path, { strokeDashoffset: 0, duration: 1.2, ease: 'power2.out' }, 0);
-      tl.to(bullets, { opacity: 1, y: 0, duration: 0.6, stagger: 0.08 }, 0.1);
-      if (outcome) tl.to(outcome, { opacity: 1, y: 0, duration: 0.6 }, 0.5);
-      if (ticket) tl.to(ticket, { opacity: 1, duration: 0.4 }, 0.7);
+      if (axis) tl.to(axis, { opacity: 1, x: 0, duration: 0.5 }, 0);
+      if (visual) tl.to(visual, { scale: 1, filter: 'blur(0px)', opacity: 1, duration: 0.9 }, 0);
+      tl.to([title, sub], { opacity: 1, y: 0, duration: 0.6, stagger: 0.1 }, 0.2);
+      if (bullets.length) tl.to(bullets, { opacity: 1, y: 0, duration: 0.5, stagger: 0.07 }, 0.4);
+      if (outcome) tl.to(outcome, { opacity: 1, y: 0, duration: 0.5 }, 0.7);
       return;
     }
 
@@ -168,22 +175,53 @@ function initTierStory() {
       scrollTrigger: {
         trigger: sec,
         start: 'top top',
-        end: '+=120%',
-        scrub: 0.6,
+        end: '+=150%',
+        scrub: 0.8,
         pin: true,
         anticipatePin: 1,
       },
     });
-    if (path) tl.to(path, { strokeDashoffset: 0, ease: 'none' }, 0);
-    tl.to(bullets, { opacity: 1, y: 0, stagger: 0.08, ease: 'power2.out' }, 0.1);
-    if (outcome) tl.to(outcome, { opacity: 1, y: 0, ease: 'power2.out' }, 0.55);
-    if (ticket) tl.to(ticket, { opacity: 1, ease: 'none' }, 0.75);
+
+    // 0 → 0.25: el axis label entra
+    if (axis) tl.to(axis, { opacity: 1, x: 0, duration: 0.25, ease: 'power2.out' }, 0);
+
+    // 0 → 0.35: visual escala desde lejos
+    if (visual) {
+      tl.to(visual, { scale: 1.0, filter: 'blur(0px)', opacity: 1, duration: 0.35, ease: 'power2.out' }, 0);
+    }
+
+    // 0.25 → 0.6: traveling — escala extra + ligero blur
+    if (visual) {
+      tl.to(
+        visual,
+        { scale: 1.45, filter: 'blur(2px)', duration: 0.35, ease: 'power1.inOut' },
+        0.25,
+      );
+    }
+
+    // 0.35 → 0.55: título + subtítulo entran
+    tl.to([title, sub], { opacity: 1, y: 0, duration: 0.2, stagger: 0.05, ease: 'power2.out' }, 0.35);
+
+    // 0.55 → 0.75: bullets stagger
+    if (bullets.length) {
+      tl.to(bullets, { opacity: 1, y: 0, duration: 0.2, stagger: 0.04, ease: 'power2.out' }, 0.55);
+    }
+
+    // 0.7 → 0.82: outcome entra
+    if (outcome) tl.to(outcome, { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' }, 0.7);
+
+    // 0.82 → 0.95: visual sigue alejándose (scale ↑, blur ↑)
+    if (visual) {
+      tl.to(visual, { scale: 1.9, filter: 'blur(6px)', opacity: 0.6, duration: 0.13, ease: 'power2.in' }, 0.82);
+    }
+
+    // 0.85 → 1.0: fade-gate cubre la sección (fade-to-bg)
+    if (fadeGate) tl.to(fadeGate, { opacity: 1, duration: 0.15, ease: 'power2.in' }, 0.85);
   });
 }
 
 function init() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    // Sin animaciones: mostrar todos los elementos de reveal
     document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => (el.style.opacity = '1'));
     return;
   }
@@ -191,7 +229,7 @@ function init() {
   initType();
   initReveal();
   initDrawLine();
-  initTierStory();
+  initCinematic();
 }
 
 let booted = false;

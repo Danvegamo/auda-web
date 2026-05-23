@@ -38,7 +38,8 @@
   --grid-line: rgba(43, 43, 43, 0.05);
   --grid-dot: rgba(43, 43, 43, 0.14);
   --grid-size: 44px;
-  --cursor-color: 232, 130, 90;   /* rgb triplet para shader OGL */
+  --cursor-color: 43, 43, 43;     /* rgb triplet — sólido oscuro en claro */
+  --cursor-mode: 1.0;             /* 1.0 = solid, 0.0 = halo */
 }
 
 [data-theme="dark"] {
@@ -53,7 +54,8 @@
   --color-accent-deep: var(--color-orange-deep);
   --grid-line: rgba(237, 230, 214, 0.06);
   --grid-dot: rgba(237, 230, 214, 0.18);
-  --cursor-color: 232, 130, 90;
+  --cursor-color: 232, 130, 90;   /* terracota cálida en oscuro */
+  --cursor-mode: 0.0;             /* halo con falloff y oscilación */
 }
 
 html {

@@ -1,0 +1,92 @@
+---
+interface Props {
+  calendarUrl: string;
+  email: string;
+  whatsapp: string;
+}
+const { calendarUrl, email, whatsapp } = Astro.props;
+const wa = whatsapp.replace(/[^0-9]/g, '');
+---
+
+<section class="band booking auda-lines" id="reservar">
+  <div class="wrap narrow">
+    <span class="eyebrow" data-reveal="up">Reserva</span>
+    <h2 data-reveal="line">Conversemos.</h2>
+    <p class="section-sub" data-reveal="up">
+      Trabajamos con un número limitado de organizaciones por trimestre. Cada relación arranca
+      con una conversación de treinta minutos: leemos tu contexto, identificamos el músculo de IA
+      más urgente y proponemos la primera capa de trabajo.
+    </p>
+
+    <ul class="b-promises" data-reveal="stagger">
+      <li><span class="b-key">01</span> Diagnóstico de oportunidad, no de venta.</li>
+      <li><span class="b-key">02</span> Sin propuestas genéricas: cada una hecha para tu organización.</li>
+      <li><span class="b-key">03</span> Cierre o no-cierre claros en menos de dos semanas.</li>
+    </ul>
+
+    <div class="cta-row" data-reveal="up">
+      <a
+        class="btn btn-primary"
+        href={calendarUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-cursor-grow
+      >
+        [ AGENDAR CONVERSACIÓN ]
+      </a>
+      <a
+        class="btn btn-ghost"
+        href={`https://wa.me/${wa}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-cursor-grow
+      >WhatsApp directo</a>
+      <a class="btn btn-ghost" href={`mailto:${email}`} data-cursor-grow>Correo</a>
+    </div>
+
+    <p class="b-foot" data-reveal="up">
+      Tickets bajo demanda. Estructura de inversión transparente — la compartimos en la llamada
+      tras entender tu organización.
+    </p>
+  </div>
+</section>
+
+<style>
+  .booking {
+    border-top: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
+  }
+  .b-promises {
+    list-style: none;
+    margin: 36px 0 36px;
+    padding: 0;
+    display: grid;
+    gap: 14px;
+  }
+  .b-promises li {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    font-size: 15px;
+    color: var(--color-text);
+    line-height: 1.55;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--color-line);
+  }
+  .b-promises li:last-child { border-bottom: none; }
+  .b-key {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--color-orange-deep);
+    flex-shrink: 0;
+  }
+  .b-foot {
+    margin-top: 32px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--color-mute);
+    line-height: 1.7;
+  }
+</style>

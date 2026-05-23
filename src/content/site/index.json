@@ -1,0 +1,24 @@
+{
+  "tagline": "Volvemos AI-first a las organizaciones con propósito.",
+  "intro": "AUDA es un estudio B2B que entra a universidades, fundaciones y empresas con propósito a través de auditorías estratégicas y las deja con sistemas de inteligencia artificial operando dentro de sus procesos.",
+  "manifesto": {
+    "lines": [
+      "No vendemos horas.",
+      "No vendemos herramientas.",
+      "Entramos, construimos, dejamos la IA operando.",
+      "Y volvemos cada mes a que siga viva."
+    ]
+  },
+  "about": {
+    "heading": "No vendemos herramientas. Entramos, construimos y dejamos la IA operando.",
+    "body": [
+      "El modelo correcto no es alquilar horas ni vender software: es entrar como ingeniero embebido durante un sprint corto, dejar la IA funcionando dentro del flujo de trabajo y sostenerla con mejora continua.",
+      "Es el modelo forward-deployed —el que usan Palantir y Anthropic— adaptado a una agencia pequeña, vertical, en español, con presencia local en Bogotá y Medellín."
+    ]
+  },
+  "contact": {
+    "email": "hola@auda.lat",
+    "whatsapp": "+57 311 7047088",
+    "calendarUrl": "https://calendar.app.google/REEMPLAZAR-CON-LINK-REAL"
+  }
+}

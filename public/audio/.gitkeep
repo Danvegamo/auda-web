@@ -1,0 +1,10 @@
+# Sube aquí tu archivo de audio ambient:
+#   public/audio/ambient.mp3
+#
+# Recomendado:
+#   - Loop seamless (recorta zero-crossings)
+#   - Stereo o mono, 44.1kHz
+#   - Loudness ~-14 LUFS, peak < -1 dBTP
+#   - Menos de 4 MB
+#
+# Sin archivo, el sintetizador (Web Audio API) sigue activo automáticamente.

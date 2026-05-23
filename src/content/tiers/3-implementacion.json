@@ -1,0 +1,14 @@
+{
+  "order": 3,
+  "n": "3",
+  "variant": "tier3",
+  "title": "Implementación de IA vertical",
+  "subtitle": "Construir y dejar operando, modelo forward-deployed.",
+  "bullets": [
+    "RAG sobre documentación interna",
+    "Asistentes y automatización de reportes",
+    "Integraciones CRM, contabilidad, correo"
+  ],
+  "outcome": "IA viva dentro de tu flujo de trabajo, equipo entrenado para sostenerla.",
+  "accent": "orange"
+}

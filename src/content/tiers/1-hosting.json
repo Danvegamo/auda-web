@@ -1,0 +1,14 @@
+{
+  "order": 1,
+  "n": "1",
+  "variant": "tier1",
+  "title": "Hosting + mantenimiento + soporte",
+  "subtitle": "La relación que sostiene todo lo demás.",
+  "bullets": [
+    "Hosting administrado + SSL + backups",
+    "Monitoreo, parches y SLA 24h",
+    "Cambios menores incluidos"
+  ],
+  "outcome": "El sitio sigue arriba, rápido y seguro sin que tú lo pienses.",
+  "accent": "green"
+}

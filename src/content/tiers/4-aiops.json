@@ -1,0 +1,14 @@
+{
+  "order": 4,
+  "n": "4",
+  "variant": "tier4",
+  "title": "AI Ops Retainer",
+  "subtitle": "Sin esto, la IA se degrada en 6 meses.",
+  "bullets": [
+    "Monitoreo de calidad y ajustes mensuales",
+    "Nuevos casos de uso trimestrales",
+    "Actualización de modelos y prompts"
+  ],
+  "outcome": "La IA sigue mejorando en lugar de envejecer.",
+  "accent": "ink"
+}
