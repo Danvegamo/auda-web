@@ -1,0 +1,306 @@
+---
+// FormulaIntro — Sección scroll-pinned tipo "intro Lessons in Chemistry":
+// cinco fórmulas (una por tier) se escriben con stroke animado a medida
+// que el scroll avanza, construyendo la idea de "agentes que se ensamblan"
+// justo antes de entrar a la narrativa de tiers.
+//
+// Reutiliza el sistema scroll-pinning de [data-cinematic] / scroll.ts.
+// Mobile: degrada a stack vertical sin pin.
+
+interface Formula {
+  tier: string;
+  label: string;
+  // Lados de la ecuación (renderizamos como SVG <text>)
+  left: string;
+  op: string;
+  right: string;
+  result: string;
+  accentVar: string;  // --color-orange | --color-green | etc
+}
+
+const formulas: Formula[] = [
+  {
+    tier: '00',
+    label: 'IDENTIDAD',
+    left: 'voz',
+    op: '×',
+    right: 'principios',
+    result: '÷ ruido',
+    accentVar: '--color-orange',
+  },
+  {
+    tier: '01',
+    label: 'HOSTING',
+    left: 'uptime',
+    op: '×',
+    right: 'SLA',
+    result: '+ backups',
+    accentVar: '--color-green',
+  },
+  {
+    tier: '02',
+    label: 'AUDITORÍA',
+    left: 'diagnóstico',
+    op: '+',
+    right: 'roadmap',
+    result: '→ claridad',
+    accentVar: '--color-orange',
+  },
+  {
+    tier: '03',
+    label: 'IMPLEMENTACIÓN',
+    left: 'modelo',
+    op: '+',
+    right: 'proceso',
+    result: '= agente',
+    accentVar: '--color-orange',
+  },
+  {
+    tier: '04',
+    label: 'AIOPS',
+    left: 'observabilidad',
+    op: '×',
+    right: 'iteración',
+    result: '= confianza',
+    accentVar: '--color-blue',
+  },
+];
+---
+
+<section class="fx" data-formula-intro id="formulas">
+  <div class="fx-pin">
+    <div class="fx-axis" aria-hidden="true">
+      <span class="fx-axis-eyebrow">FÓRMULAS · AUDA</span>
+      <span class="fx-axis-bar"></span>
+      <span class="fx-axis-tail">5 / 5</span>
+    </div>
+
+    <div class="fx-stage">
+      <header class="fx-head">
+        <span class="eyebrow" data-reveal="up">Antes de las capas</span>
+        <h2 data-reveal="line">Así se ensambla un agente.</h2>
+        <p class="section-sub" data-reveal="up">
+          Cada capa de AUDA es una ecuación. Lo que entra, lo que multiplica, lo que sale.
+        </p>
+      </header>
+
+      <ol class="fx-list" role="list">
+        {formulas.map((f, i) => (
+          <li
+            class="fx-item"
+            data-fx-index={i}
+            style={`--fx-accent: var(${f.accentVar})`}
+          >
+            <span class="fx-num">{f.tier}</span>
+            <span class="fx-label">{f.label}</span>
+            <span class="fx-eq">
+              <span class="fx-tok fx-left">{f.left}</span>
+              <span class="fx-tok fx-op">{f.op}</span>
+              <span class="fx-tok fx-right">{f.right}</span>
+              <span class="fx-tok fx-result">{f.result}</span>
+            </span>
+            <span class="fx-rule" aria-hidden="true"></span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .fx {
+    position: relative;
+    border-top: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
+    background: var(--color-bg);
+    /* scroll.ts pinea con altura nativa; el padding interno + pin extiende */
+  }
+
+  /* Sticky inner — scroll.ts hace el pin real en desktop;
+     en mobile el sticky alone basta y degrada solo */
+  .fx-pin {
+    position: relative;
+    min-height: 100svh;
+    padding: clamp(80px, 12vw, 130px) 6vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(32px, 5vw, 60px);
+  }
+
+  .fx-axis {
+    position: absolute;
+    top: 28px;
+    left: 6vw;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--color-mute);
+    z-index: 1;
+  }
+  .fx-axis-bar {
+    display: inline-block;
+    width: 40px;
+    height: 1px;
+    background: var(--color-orange);
+  }
+  .fx-axis-tail { color: var(--color-orange-deep); }
+
+  .fx-stage {
+    max-width: 1040px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .fx-head { margin-bottom: clamp(28px, 4vw, 48px); }
+
+  .fx-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(14px, 2vw, 20px);
+  }
+
+  .fx-item {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    align-items: baseline;
+    column-gap: clamp(18px, 3vw, 32px);
+    row-gap: 6px;
+    padding: 14px 0 18px;
+    position: relative;
+    opacity: 0;            /* scroll.ts hace el reveal por progress */
+    transform: translateY(14px);
+    will-change: opacity, transform;
+  }
+  .fx-item[data-fx-active="true"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .fx-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--color-mute);
+    align-self: center;
+  }
+  .fx-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fx-accent, var(--color-orange-deep));
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .fx-eq {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 14px;
+    grid-column: 2;
+    grid-row: 2;
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(28px, 4vw, 48px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    color: var(--color-text);
+  }
+  .fx-tok {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.45s ease, transform 0.45s ease;
+  }
+  .fx-item[data-fx-active="true"] .fx-tok { opacity: 1; transform: translateY(0); }
+  .fx-item[data-fx-active="true"] .fx-tok.fx-op     { transition-delay: 0.10s; }
+  .fx-item[data-fx-active="true"] .fx-tok.fx-right  { transition-delay: 0.20s; }
+  .fx-item[data-fx-active="true"] .fx-tok.fx-result { transition-delay: 0.34s; color: var(--fx-accent); }
+  .fx-op { color: var(--color-mute); font-weight: 400; }
+
+  .fx-rule {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    align-self: stretch;
+    width: 1px;
+    background: var(--fx-accent);
+    transform: scaleY(0);
+    transform-origin: top;
+    transition: transform 0.6s ease 0.20s;
+  }
+  .fx-item[data-fx-active="true"] .fx-rule { transform: scaleY(1); }
+
+  @media (max-width: 720px) {
+    .fx-item {
+      grid-template-columns: 44px 1fr;
+      column-gap: 14px;
+    }
+    .fx-rule { display: none; }
+    .fx-eq { font-size: clamp(22px, 7vw, 32px); }
+  }
+</style>
+
+<script>
+  // Activa cada fórmula secuencialmente según el scroll progress de la sección.
+  // En desktop: scroll-pinned por scroll.ts (data-formula-intro).
+  // En mobile: IntersectionObserver basta para revelarlas en orden.
+  function wireFormulaIntro() {
+    const section = document.querySelector<HTMLElement>('[data-formula-intro]');
+    if (!section || section.dataset.fxWired) return;
+    section.dataset.fxWired = '1';
+
+    const items = Array.from(section.querySelectorAll<HTMLElement>('.fx-item'));
+    if (!items.length) return;
+
+    const mobile = window.matchMedia('(max-width: 880px)').matches;
+
+    if (mobile) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              (entry.target as HTMLElement).dataset.fxActive = 'true';
+              io.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.4 },
+      );
+      items.forEach((it) => io.observe(it));
+      return;
+    }
+
+    // Desktop: scroll.ts marca section.dataset.fxProgress (0-1) cada frame.
+    // Aquí solo respondemos a ese atributo y activamos N items según progress.
+    const total = items.length;
+    let lastActive = -1;
+
+    const apply = () => {
+      const p = parseFloat(section.dataset.fxProgress || '0');
+      // Reservamos primer 8% y último 8% para entrada/salida limpias.
+      const usable = Math.max(0, Math.min(1, (p - 0.08) / 0.84));
+      const activeCount = Math.floor(usable * total) + (usable > 0 ? 1 : 0);
+      const clamped = Math.min(total, activeCount);
+      if (clamped === lastActive) return;
+      lastActive = clamped;
+      items.forEach((it, i) => {
+        if (i < clamped) it.dataset.fxActive = 'true';
+        else delete it.dataset.fxActive;
+      });
+    };
+
+    const mo = new MutationObserver(apply);
+    mo.observe(section, { attributes: true, attributeFilter: ['data-fx-progress'] });
+    apply();
+  }
+  document.addEventListener('astro:page-load', wireFormulaIntro);
+  wireFormulaIntro();
+</script>

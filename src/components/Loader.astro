@@ -143,9 +143,10 @@
     btnSound?.addEventListener('click', () => reveal(true));
     btnMute?.addEventListener('click', () => reveal(false));
 
-    // Auto-dismiss fail-safe: 8s tras carga, si user no interactúa
-    // entra en modo silencio automático. Evita bloqueo perpetuo.
-    setTimeout(() => reveal(false), 8000);
+    // Auto-dismiss fail-safe: 3s tras carga, si user no interactúa
+    // entra en modo silencio automático. Evita bloqueo perpetuo en
+    // entornos sin gesture (VSCode preview, headless, etc).
+    setTimeout(() => reveal(false), 3000);
 
     if (reduce) {
       gsap.set([sub, gate], { opacity: 1 });

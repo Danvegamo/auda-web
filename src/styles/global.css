@@ -45,6 +45,10 @@
   --mood-bg: var(--color-bg);
   --mood-ink: var(--color-text);
   --grain-opacity: 0.04;
+  --paper-warmth: rgba(232, 130, 90, 0.05);  /* tint cálido global */
+  --paper-overlay-opacity: 0.55;
+  --chroma-r: rgba(232, 130, 90, 0.12);      /* terracota offset texto */
+  --chroma-b: rgba(62, 92, 118, 0.10);       /* azul polvoso offset texto */
 }
 
 [data-theme="dark"] {
@@ -62,6 +66,10 @@
   --cursor-color: 232, 130, 90;   /* terracota cálida en oscuro */
   --cursor-mode: 0.0;             /* halo con falloff y oscilación */
   --grain-opacity: 0.07;
+  --paper-warmth: rgba(62, 92, 118, 0.06);   /* tinte frío sutil en dark */
+  --paper-overlay-opacity: 0.35;
+  --chroma-r: rgba(232, 130, 90, 0.18);
+  --chroma-b: rgba(62, 92, 118, 0.14);
 }
 
 html {
@@ -193,8 +201,9 @@ body {
   .only-mobile { display: block; }
 }
 
-/* Reveal hook (scroll.ts lo controla) */
-[data-reveal] {
+/* Reveal hook — scroll.ts lo controla.
+   Solo ocultamos cuando JS está vivo (html.js). Si JS falla, texto visible. */
+html.js [data-reveal] {
   opacity: 0;
 }
 
@@ -204,7 +213,7 @@ body {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }
-  [data-reveal] { opacity: 1; }
+  html.js [data-reveal] { opacity: 1; }
 }
 
 /* ------------------------------------------------------------------
@@ -223,6 +232,56 @@ body {
 }
 
 [data-theme="dark"] .film-grain { mix-blend-mode: screen; }
+
+/* ------------------------------------------------------------------
+   Paper overlay — capa cálida tipo "Lessons in Chemistry"
+   Tint sutil + displacement de papel; sobre grain, bajo cursor.
+   ------------------------------------------------------------------ */
+.auda-paper {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9991;
+  opacity: var(--paper-overlay-opacity);
+  mix-blend-mode: multiply;
+  background:
+    radial-gradient(ellipse at 30% 20%, var(--paper-warmth) 0%, transparent 55%),
+    radial-gradient(ellipse at 75% 80%, var(--paper-warmth) 0%, transparent 55%);
+  will-change: opacity;
+  transition: opacity 0.6s ease;
+}
+[data-theme="dark"] .auda-paper { mix-blend-mode: screen; }
+
+.auda-paper-texture {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9992;
+  opacity: 0.18;
+  mix-blend-mode: overlay;
+  filter: url(#auda-paper-filter);
+  background:
+    repeating-linear-gradient(
+      102deg,
+      transparent 0 3px,
+      rgba(43, 43, 43, 0.04) 3px 4px
+    );
+}
+[data-theme="dark"] .auda-paper-texture { opacity: 0.12; }
+
+@media (prefers-reduced-motion: reduce) {
+  .auda-paper-texture { filter: none; }
+}
+
+/* Chromatic aberration sutil en titulares — refuerza la sensación de impresión */
+.chroma {
+  text-shadow:
+    0.5px 0 0 var(--chroma-r),
+    -0.5px 0 0 var(--chroma-b);
+}
+@media (prefers-reduced-motion: reduce) {
+  .chroma { text-shadow: none; }
+}
 
 [data-velocity-blur] {
   filter: blur(var(--scroll-blur));

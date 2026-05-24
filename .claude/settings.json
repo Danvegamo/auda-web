@@ -14,7 +14,32 @@
       "Bash(pkill -f \"astro dev\")",
       "Bash(sort -k5 -h)",
       "Bash(curl -s \"http://localhost:4321/src/scripts/scroll.ts\" -o /tmp/audascroll.js)",
-      "Bash(curl -s \"http://localhost:4321/src/scripts/scene3d.ts\" -o /tmp/audascene.js)"
+      "Bash(curl -s \"http://localhost:4321/src/scripts/scene3d.ts\" -o /tmp/audascene.js)",
+      "Bash(grep -o '.\\\\{0,80\\\\}data-vp-slot=\"tier.\\\\{0,40\\\\}' /home/danvegamo/auda-web/dist/index.html)",
+      "Bash(ffmpeg -version)",
+      "Bash(cwebp -version)",
+      "Bash(command -v ffmpeg)",
+      "Bash(command -v cwebp)",
+      "Bash(command -v convert)",
+      "Bash(command -v magick)",
+      "Bash(dpkg -l)",
+      "Bash(sudo apt install -y ffmpeg webp imagemagick)",
+      "Bash(magick -version)",
+      "Bash(chmod +x /home/danvegamo/auda-web/scripts/optimize-media.sh)",
+      "Bash(/home/danvegamo/auda-web/scripts/optimize-media.sh)",
+      "Bash(curl -s http://localhost:4321/)",
+      "Bash(curl -s http://localhost:4321/ -o /tmp/auda-dev.html)",
+      "Bash(curl -s http://localhost:4322/ -o /tmp/auda-dev2.html)",
+      "Bash(curl -s -I http://localhost:4322/video/hero.webm)",
+      "Bash(curl -s -I http://localhost:4322/video/posters/hero.webp)",
+      "Bash(command -v chromium google-chrome chrome firefox)",
+      "Read(//usr/bin/**)",
+      "Bash(npm ls *)",
+      "Bash(curl -s \"http://localhost:4322/@vite/client\" -o /dev/null -w \"vite: %{http_code}\\\\n\")",
+      "Bash(curl -s \"http://localhost:4322/src/scripts/scroll.ts\" -o /tmp/scroll.compiled.js -w \"scroll.ts: %{http_code}\\\\n\")",
+      "Bash(chromium --version)",
+      "Bash(chromium --headless --disable-gpu --no-sandbox --hide-scrollbars --window-size=1440,900 --virtual-time-budget=15000 --screenshot=/tmp/shots/full.png --screenshot-format=png --hide-scrollbars --full-page http://localhost:4322/)",
+      "Bash(magick identify *)"
     ]
   }
 }

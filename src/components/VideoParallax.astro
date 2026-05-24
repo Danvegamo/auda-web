@@ -1,0 +1,308 @@
+---
+// VideoParallax — Sección full-bleed con video de fondo + texto fijo estilo
+// rockstargames.com/VI. Si `src` no existe (o el archivo aún no fue subido),
+// degrada a un gradient placeholder animado para que el layout se pueda
+// validar antes de tener los assets finales.
+
+export type TierLanguage = 'typography' | 'infra' | 'data' | 'build' | 'neural';
+export type ParallaxVariant = 'hero' | 'bridge' | 'tier';
+
+interface Props {
+  /** Slot id usado para auto-resolver rutas: /video/{slot}.{webm,mp4} + posters/{slot}.jpg */
+  slot: string;
+  variant?: ParallaxVariant;
+  heading?: string;
+  body?: string;
+  eyebrow?: string;
+  mood?: 'warm' | 'cool' | 'dark';
+  tierLanguage?: TierLanguage;
+  /** Si false, no intenta cargar video (solo placeholder). Útil mientras no hay assets. */
+  hasVideo?: boolean;
+  /** Altura: 'full' = 100svh (hero/bridge), 'half' = 70svh (tier headers). */
+  height?: 'full' | 'half';
+}
+
+const {
+  slot,
+  variant = 'bridge',
+  heading,
+  body,
+  eyebrow,
+  mood = 'warm',
+  tierLanguage,
+  hasVideo = true,
+  height = 'full',
+} = Astro.props;
+
+const webm = `/video/${slot}.webm`;
+const mp4 = `/video/${slot}.mp4`;
+const poster = `/video/posters/${slot}.webp`;
+---
+
+<section
+  class:list={[
+    'vp',
+    `vp-${variant}`,
+    `vp-h-${height}`,
+    tierLanguage && `vp-lang-${tierLanguage}`,
+  ]}
+  data-parallax-video
+  data-mood={mood}
+  data-vp-slot={slot}
+>
+  <div class="vp-media" aria-hidden="true">
+    {hasVideo && (
+      <video
+        class="vp-video"
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        poster={poster}
+        data-vp-video
+      >
+        <source src={mp4} type="video/mp4" />
+        <source src={webm} type="video/webm" />
+      </video>
+    )}
+    <div class="vp-placeholder" data-vp-placeholder></div>
+    <div class="vp-grade"></div>
+  </div>
+
+  <div class="vp-content">
+    <div class="vp-inner">
+      {eyebrow && (
+        <span class="vp-eyebrow" data-reveal="up">
+          <span class="vp-eyebrow-dot"></span>
+          {eyebrow}
+        </span>
+      )}
+      {heading && <h2 class="vp-heading chroma" data-reveal="line">{heading}</h2>}
+      {body && <p class="vp-body" data-reveal="up">{body}</p>}
+      <slot />
+    </div>
+  </div>
+
+  {variant !== 'tier' && (
+    <div class="vp-foot" aria-hidden="true">
+      <span class="vp-foot-line"></span>
+      <span class="vp-foot-label">scroll</span>
+    </div>
+  )}
+</section>
+
+<style>
+  .vp {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: var(--color-bg);
+    color: var(--color-text);
+    isolation: isolate;
+  }
+  .vp-h-full { min-height: 100svh; }
+  .vp-h-half { min-height: 70svh; }
+
+  .vp-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .vp-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 1;
+    z-index: 1;  /* tapa el placeholder cuando carga */
+    will-change: opacity;
+  }
+  /* Si el video falla, JS marca [data-vp-loaded="false"] y volvemos al placeholder */
+  .vp[data-vp-loaded="false"] .vp-video { opacity: 0; }
+
+  /* Placeholder animado: siempre visible debajo del video.
+     Si el video carga (opacity:1) lo tapa. Si falla, queda visible. */
+  .vp-placeholder {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse at 30% 30%, var(--color-orange) 0%, transparent 55%),
+      radial-gradient(ellipse at 70% 70%, var(--color-blue) 0%, transparent 55%),
+      linear-gradient(135deg, var(--color-paper-soft), var(--color-paper));
+    opacity: 0.85;
+    transition: opacity 0.6s ease;
+    animation: vp-drift 18s ease-in-out infinite alternate;
+    filter: saturate(0.7) brightness(0.95);
+  }
+  [data-theme="dark"] .vp-placeholder {
+    background:
+      radial-gradient(ellipse at 30% 30%, rgba(232, 130, 90, 0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 70% 70%, rgba(62, 92, 118, 0.45) 0%, transparent 55%),
+      linear-gradient(135deg, var(--color-ink-soft), var(--color-ink-deep));
+    filter: saturate(0.8) brightness(1);
+  }
+  @keyframes vp-drift {
+    0%   { background-position: 0% 0%, 100% 100%, 0 0; transform: scale(1.02); }
+    100% { background-position: 8% 6%, 92% 94%, 0 0; transform: scale(1.06); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .vp-placeholder { animation: none; }
+  }
+
+  /* Capa de "grading" — vignette + tint según mood */
+  .vp-grade {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.45) 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.0) 60%, rgba(0, 0, 0, 0.35) 100%);
+    mix-blend-mode: multiply;
+  }
+  .vp[data-mood="warm"] .vp-grade {
+    background:
+      radial-gradient(ellipse at center, transparent 45%, rgba(43, 27, 15, 0.40) 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.0) 55%, rgba(22, 22, 22, 0.30) 100%);
+  }
+  .vp[data-mood="cool"] .vp-grade {
+    background:
+      radial-gradient(ellipse at center, transparent 50%, rgba(15, 25, 40, 0.40) 100%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.0) 55%, rgba(15, 20, 30, 0.30) 100%);
+  }
+  .vp[data-mood="dark"] .vp-grade {
+    background:
+      radial-gradient(ellipse at center, transparent 35%, rgba(0, 0, 0, 0.70) 100%);
+  }
+
+  /* Contenido superpuesto: encima del video (z-index:1) y del grade */
+  .vp-content {
+    position: relative;
+    z-index: 3;
+    min-height: inherit;
+    display: flex;
+    align-items: center;
+    padding: clamp(80px, 12vw, 140px) 6vw;
+  }
+  .vp-h-full .vp-content { min-height: 100svh; }
+  .vp-h-half .vp-content { min-height: 70svh; }
+
+  .vp-inner {
+    max-width: 880px;
+    color: #f4eee1;  /* tinta clara siempre sobre video, indep. del tema */
+    text-shadow: 0 1px 18px rgba(0, 0, 0, 0.45);
+  }
+  .vp-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(244, 238, 225, 0.85);
+    margin-bottom: 24px;
+  }
+  .vp-eyebrow-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-orange);
+  }
+  .vp-heading {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(36px, 5.5vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -0.022em;
+    margin: 0 0 22px;
+    color: #f4eee1;
+  }
+  .vp-body {
+    font-size: clamp(15px, 1.8vw, 18px);
+    line-height: 1.6;
+    color: rgba(244, 238, 225, 0.82);
+    max-width: 620px;
+    margin: 0;
+  }
+
+  .vp-foot {
+    position: absolute;
+    bottom: 30px;
+    left: 6vw;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .vp-foot-line {
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: var(--color-orange);
+    animation: vp-foot-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes vp-foot-pulse {
+    0%, 100% { opacity: 0.35; transform: scaleX(0.6); transform-origin: left; }
+    50%       { opacity: 1;    transform: scaleX(1); }
+  }
+  .vp-foot-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(244, 238, 225, 0.7);
+  }
+
+  /* Variante tier: header más compacto, parte superior recortada */
+  .vp-tier {
+    border-top: 1px solid var(--color-line);
+  }
+  .vp-tier .vp-heading { font-size: clamp(28px, 4vw, 48px); }
+</style>
+
+<script>
+  // El video arranca visible por CSS (opacity:1). Aquí solo manejamos:
+  //  - error de carga → data-vp-loaded="false" → CSS oculta el video y deja placeholder
+  //  - prefers-reduced-motion → pausa el video, deja primer frame
+  //  - autoplay bloqueado → intentar play silencioso al primer scroll/click
+  function wireVideos() {
+    const sections = document.querySelectorAll<HTMLElement>('[data-parallax-video]');
+    sections.forEach((sec) => {
+      if (sec.dataset.vpWired) return;
+      sec.dataset.vpWired = '1';
+      const video = sec.querySelector<HTMLVideoElement>('[data-vp-video]');
+      if (!video) return;
+
+      const onError = () => sec.setAttribute('data-vp-loaded', 'false');
+      // Listener en el <video> + en cada <source> (algunos browsers solo emiten
+      // error en la source individual y no propagan al video element).
+      video.addEventListener('error', onError);
+      video.querySelectorAll('source').forEach((s) => s.addEventListener('error', () => {
+        // Solo marcamos error si ninguna source funcionó.
+        if (video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) onError();
+      }));
+
+      // Intentar play explícito (algunos browsers requieren prom resolve).
+      const tryPlay = () => video.play().catch(() => {
+        const resume = () => { video.play().catch(() => {}); document.removeEventListener('click', resume); document.removeEventListener('scroll', resume); };
+        document.addEventListener('click', resume, { once: true });
+        document.addEventListener('scroll', resume, { once: true, passive: true });
+      });
+      if (video.readyState >= 2) tryPlay();
+      else video.addEventListener('loadedmetadata', tryPlay, { once: true });
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        video.pause();
+      }
+    });
+  }
+  document.addEventListener('astro:page-load', wireVideos);
+  wireVideos();
+</script>

@@ -9,6 +9,8 @@ import Verticals from '../components/sections/Verticals.astro';
 import Team from '../components/sections/Team.astro';
 import BookingCTA from '../components/sections/BookingCTA.astro';
 import Contact from '../components/sections/Contact.astro';
+import VideoParallax from '../components/VideoParallax.astro';
+import FormulaIntro from '../components/sections/FormulaIntro.astro';
 import { getContent } from '../lib/wp';
 
 const c = await getContent();
@@ -20,9 +22,19 @@ const c = await getContent();
   <main>
     <Manifesto lines={c.manifesto.lines} />
 
-    <div class="divider" aria-hidden="true"></div>
+    <VideoParallax
+      slot="bridge"
+      variant="bridge"
+      height="full"
+      mood="warm"
+      eyebrow="Principios · Oficio"
+      heading="Hacemos lo invisible visible."
+      body="Antes de escribir una línea, escribimos los principios. Antes del agente, el manifiesto."
+    />
 
     <About heading={c.about.heading} body={c.about.body} />
+
+    <FormulaIntro />
 
     <TierStory tiers={c.tiers} />
 

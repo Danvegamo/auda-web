@@ -7,7 +7,10 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "media": "./scripts/optimize-media.sh",
+    "media:force": "./scripts/optimize-media.sh --force",
+    "prebuild": "./scripts/optimize-media.sh"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.2",

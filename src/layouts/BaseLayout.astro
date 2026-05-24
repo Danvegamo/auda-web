@@ -84,6 +84,9 @@ const orgSchema = {
         } catch (e) {
           document.documentElement.setAttribute('data-theme', 'light');
         }
+        // Marca que JS está vivo. Si este script no corre, queda sin .js
+        // y CSS deja el texto visible (sin animaciones de reveal).
+        document.documentElement.classList.add('js');
       })();
     </script>
 
@@ -93,6 +96,15 @@ const orgSchema = {
     <Loader />
     <slot />
     <div class="film-grain" aria-hidden="true"></div>
+    <div class="auda-paper" aria-hidden="true"></div>
+    <div class="auda-paper-texture" aria-hidden="true"></div>
+    {/* SVG filter para textura de papel — turbulence + displacement sutil */}
+    <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+      <filter id="auda-paper-filter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves="2" seed="7" />
+        <feDisplacementMap in="SourceGraphic" scale="2" />
+      </filter>
+    </svg>
     <Cursor />
     <script>
       import '../scripts/theme.ts';

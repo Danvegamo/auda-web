@@ -1,6 +1,5 @@
 ---
 import AudaMark from '../AudaMark.astro';
-import DotField from '../DotField.astro';
 import ThemeToggle from '../ThemeToggle.astro';
 
 interface Props {
@@ -10,11 +9,37 @@ interface Props {
   coord?: string;
 }
 
-const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.props;
+const { tagline, intro, coord = '4.7110° N / 74.0721° W' } = Astro.props;
+
+const webm = '/video/hero.webm';
+const mp4 = '/video/hero.mp4';
+const poster = '/video/posters/hero.webp';
 ---
 
-<header class="hero auda-lines" data-mood="warm">
-  <DotField />
+<header
+  class="hero"
+  data-mood="warm"
+  data-parallax-video
+  data-vp-slot="hero"
+>
+  <div class="hero-media" aria-hidden="true">
+    <video
+      class="hero-video"
+      autoplay
+      muted
+      loop
+      playsinline
+      preload="metadata"
+      poster={poster}
+      data-vp-video
+    >
+      <source src={mp4} type="video/mp4" />
+      <source src={webm} type="video/webm" />
+    </video>
+    <div class="hero-placeholder" data-vp-placeholder></div>
+    <div class="hero-grade"></div>
+  </div>
+
   <nav class="nav">
     <a class="brand" href="/" aria-label="AUDA inicio">
       <AudaMark size={34} />
@@ -37,7 +62,7 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
       <span class="dot-accent"></span>
       Estudio AI-first · Bogotá / Medellín
     </div>
-    <h1 data-reveal="type" data-morph-target data-velocity-blur>{tagline}</h1>
+    <h1 class="chroma" data-reveal="type" data-morph-target data-velocity-blur>{tagline}</h1>
     <p class="lead" data-reveal="up" data-cursor="read">{intro}</p>
     <div class="cta-row" data-reveal="up" data-cursor="act">
       <a class="btn btn-primary" href="#reservar" data-cursor-grow data-magnet>Agendar conversación</a>
@@ -55,6 +80,84 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
 </header>
 
 <style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px 6vw 80px;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    opacity: 1;
+    z-index: 1;
+    will-change: opacity;
+  }
+  .hero[data-vp-loaded="false"] .hero-video { opacity: 0; }
+
+  .hero-placeholder {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(ellipse at 28% 25%, var(--color-orange) 0%, transparent 55%),
+      radial-gradient(ellipse at 72% 75%, var(--color-blue) 0%, transparent 55%),
+      linear-gradient(135deg, var(--color-paper-soft), var(--color-paper));
+    opacity: 0.85;
+    transition: opacity 0.6s ease;
+    animation: hero-drift 22s ease-in-out infinite alternate;
+    filter: saturate(0.7) brightness(0.96);
+  }
+  [data-theme="dark"] .hero-placeholder {
+    background:
+      radial-gradient(ellipse at 28% 25%, rgba(232, 130, 90, 0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 72% 75%, rgba(62, 92, 118, 0.45) 0%, transparent 55%),
+      linear-gradient(135deg, var(--color-ink-soft), var(--color-ink-deep));
+    filter: saturate(0.85);
+  }
+  @keyframes hero-drift {
+    0%   { background-position: 0% 0%, 100% 100%, 0 0; transform: scale(1.02); }
+    100% { background-position: 6% 4%, 94% 96%, 0 0; transform: scale(1.05); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-placeholder { animation: none; }
+  }
+
+  .hero-grade {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    /* Gradient horizontal: lado izquierdo más oscuro para que el texto se lea
+       sin tapar el video del lado derecho. Estilo rockstargames.com/VI. */
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.25) 45%, rgba(0, 0, 0, 0) 75%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.35) 100%);
+    mix-blend-mode: multiply;
+  }
+  [data-theme="dark"] .hero-grade {
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.65) 0%, rgba(0, 0, 0, 0.30) 45%, rgba(0, 0, 0, 0) 75%),
+      linear-gradient(180deg, rgba(0, 0, 0, 0.40) 0%, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.50) 100%);
+  }
+
   .nav {
     position: absolute;
     top: 0;
@@ -71,14 +174,13 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
     align-items: center;
     gap: 12px;
     text-decoration: none;
-    color: var(--color-text);
+    color: #f4eee1;
   }
   .brand-word {
     font-family: var(--font-serif);
     font-weight: 700;
     font-size: 20px;
     letter-spacing: 0.22em;
-    color: var(--color-text);
   }
   .nav-links {
     display: flex;
@@ -88,11 +190,11 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
   .nav-links a {
     font-size: 13px;
     letter-spacing: 0.06em;
-    color: var(--color-text-soft);
+    color: rgba(244, 238, 225, 0.78);
     text-decoration: none;
     transition: color 0.2s;
   }
-  .nav-links a:hover { color: var(--color-text); }
+  .nav-links a:hover { color: #f4eee1; }
   .sound-toggle {
     display: inline-flex;
     align-items: center;
@@ -103,10 +205,10 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
     font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.12em;
-    color: var(--color-text-soft);
+    color: rgba(244, 238, 225, 0.78);
     padding: 0;
   }
-  .sound-toggle:hover { color: var(--color-text); }
+  .sound-toggle:hover { color: #f4eee1; }
   .st-dot {
     width: 7px;
     height: 7px;
@@ -117,28 +219,21 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
   .sound-toggle.on .st-dot { background: var(--color-orange); }
   .nav-cta {
     padding: 8px 18px;
-    border: 1px solid var(--color-line);
-    color: var(--color-text) !important;
+    border: 1px solid rgba(244, 238, 225, 0.35);
+    color: #f4eee1 !important;
     transition: border-color 0.2s, background 0.2s !important;
   }
   .nav-cta:hover {
     border-color: var(--color-orange) !important;
-    background: rgba(232, 130, 90, 0.08);
+    background: rgba(232, 130, 90, 0.16);
   }
 
-  .hero {
-    position: relative;
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 120px 6vw 80px;
-    overflow: hidden;
-  }
   .hero-inner {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     max-width: 880px;
+    color: #f4eee1;
+    text-shadow: 0 1px 18px rgba(0, 0, 0, 0.45);
   }
   .hero-eyebrow {
     display: flex;
@@ -147,7 +242,7 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
     font-size: 11px;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: var(--color-text-soft);
+    color: rgba(244, 238, 225, 0.78);
     margin-bottom: 28px;
     font-family: var(--font-mono);
   }
@@ -166,11 +261,11 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
     line-height: 1.04;
     letter-spacing: -0.025em;
     margin: 0 0 24px;
-    color: var(--color-text);
+    color: #f4eee1;
   }
   .lead {
     font-size: clamp(16px, 2vw, 19px);
-    color: var(--color-text-soft);
+    color: rgba(244, 238, 225, 0.85);
     max-width: 600px;
     margin: 0 0 36px;
     line-height: 1.6;
@@ -180,7 +275,7 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
     bottom: 36px;
     left: 6vw;
     right: 6vw;
-    z-index: 2;
+    z-index: 3;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -201,12 +296,12 @@ const { tagline, intro, email, coord = '4.7110° N / 74.0721° W' } = Astro.prop
     font-size: 10px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--color-text-soft);
+    color: rgba(244, 238, 225, 0.7);
   }
   .hero-coord {
     font-family: var(--font-mono);
     font-size: 10px;
-    color: var(--color-mute);
+    color: rgba(244, 238, 225, 0.55);
     letter-spacing: 0.08em;
   }
 

@@ -1,19 +1,51 @@
 ---
 import TierVisual from '../svg/TierVisual.astro';
-import type { Tier } from '../../lib/wp';
+import VideoParallax from '../VideoParallax.astro';
+import type { Tier, TierVariant } from '../../lib/wp';
 
 interface Props { tier: Tier; index: number; total: number }
 const { tier, index, total } = Astro.props;
 const idx = String(index + 1).padStart(2, '0');
 const tot = String(total).padStart(2, '0');
+
+// Mapeo de variante de tier a su "lenguaje visual" propio.
+// Consumido por CSS y por cinematic.ts para diferenciar tier por tier.
+const LANGUAGE: Record<TierVariant, 'typography' | 'infra' | 'data' | 'build' | 'neural'> = {
+  tier0: 'typography',
+  tier1: 'infra',
+  tier2: 'data',
+  tier3: 'build',
+  tier4: 'neural',
+};
+const MOOD: Record<TierVariant, 'warm' | 'cool' | 'dark'> = {
+  tier0: 'warm',
+  tier1: 'cool',
+  tier2: 'warm',
+  tier3: 'warm',
+  tier4: 'dark',
+};
+const tierLanguage = LANGUAGE[tier.variant];
+const tierMood = MOOD[tier.variant];
 ---
 
+<VideoParallax
+  slot={tier.variant}
+  variant="tier"
+  height="half"
+  mood={tierMood}
+  tierLanguage={tierLanguage}
+  eyebrow={`CAPA ${idx} / ${tot}`}
+  heading={tier.title}
+  body={tier.subtitle}
+/>
+
 <section
-  class={`tier-story accent-${tier.accent}`}
+  class={`tier-story accent-${tier.accent} lang-${tierLanguage}`}
   data-tier-story
   data-cinematic
   data-tier-index={index}
-  data-mood={tier.accent === 'ink' ? 'dark' : tier.accent === 'blue' ? 'cool' : 'warm'}
+  data-tier-language={tierLanguage}
+  data-mood={tierMood}
   id={`tier-${tier.n}`}
 >
   <div class="ts-axis" aria-hidden="true">
@@ -188,5 +220,116 @@ const tot = String(total).padStart(2, '0');
     }
     .ts-visual { order: -1; max-width: 320px; margin: 0 auto; }
     .ts-axis { top: 16px; }
+  }
+
+  /* ------------------------------------------------------------------
+     Lenguaje por tier — cada uno con su propio "dialecto" visual.
+     ------------------------------------------------------------------ */
+
+  /* tier0 · typography — serif marcado, bullet con marca de pluma */
+  .lang-typography .ts-title {
+    font-weight: 700;
+    font-style: italic;
+    letter-spacing: -0.02em;
+  }
+  .lang-typography .ts-bullets li::before {
+    width: 8px;
+    height: 2px;
+    border-radius: 0;
+    top: 18px;
+    background: var(--color-orange);
+    transform: rotate(-12deg);
+  }
+  .lang-typography .ts-axis-name::before {
+    content: '§ ';
+    color: var(--color-orange);
+  }
+
+  /* tier1 · infra — mono, líneas técnicas, bullet cuadrado */
+  .lang-infra .ts-title {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: clamp(24px, 3.4vw, 38px);
+    letter-spacing: -0.005em;
+  }
+  .lang-infra .ts-bullets {
+    border-left: 1px dashed var(--color-line);
+  }
+  .lang-infra .ts-bullets li::before {
+    width: 6px;
+    height: 6px;
+    border-radius: 0;
+    background: var(--color-green);
+  }
+  .lang-infra .ts-num {
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+
+  /* tier2 · data — bullets con barra horizontal (chart vibe) */
+  .lang-data .ts-bullets li {
+    padding-left: 28px;
+  }
+  .lang-data .ts-bullets li::before {
+    width: 16px;
+    height: 3px;
+    border-radius: 0;
+    top: 18px;
+    left: -1px;
+    background: var(--color-orange);
+  }
+  .lang-data .ts-bullets li::after {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 22px;
+    width: 8px;
+    height: 1px;
+    background: var(--color-line);
+  }
+  .lang-data .ts-cad::after {
+    content: ' · DELTA';
+    color: var(--color-orange-deep);
+  }
+
+  /* tier3 · build — bloques modulares, bullets cuadrados rellenos */
+  .lang-build .ts-title {
+    text-transform: none;
+  }
+  .lang-build .ts-bullets li {
+    padding: 10px 0 10px 22px;
+  }
+  .lang-build .ts-bullets li::before {
+    width: 9px;
+    height: 9px;
+    border-radius: 0;
+    top: 16px;
+    background: var(--color-orange);
+    box-shadow: 2px 2px 0 var(--color-line);
+  }
+  .lang-build .ts-outcome {
+    border-left-width: 5px;
+  }
+
+  /* tier4 · neural — orgánico, bullet circular con halo, italic en outcome */
+  .lang-neural .ts-title {
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+  .lang-neural .ts-bullets {
+    border-left-color: rgba(62, 92, 118, 0.32);
+  }
+  .lang-neural .ts-bullets li::before {
+    width: 7px;
+    height: 7px;
+    background: var(--color-blue);
+    box-shadow: 0 0 0 3px rgba(62, 92, 118, 0.18);
+  }
+  .lang-neural .ts-outcome {
+    border-left-color: var(--color-blue);
+    background: linear-gradient(180deg, var(--color-surface), rgba(62, 92, 118, 0.06));
+  }
+  .lang-neural .ts-arrow {
+    color: var(--color-blue);
   }
 </style>

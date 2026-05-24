@@ -238,6 +238,48 @@ function initCinematic() {
   });
 }
 
+// FormulaIntro: pinea la sección y publica progress en data-fx-progress
+// para que el componente vaya activando fórmulas en orden.
+function initFormulaIntro() {
+  const mobile = window.matchMedia('(max-width: 880px)').matches;
+  if (mobile) return; // En mobile, FormulaIntro usa IntersectionObserver propio.
+  document.querySelectorAll<HTMLElement>('[data-formula-intro]').forEach((sec) => {
+    if (sec.dataset.fxIntroBound) return;
+    sec.dataset.fxIntroBound = '1';
+    ScrollTrigger.create({
+      trigger: sec,
+      start: 'top top',
+      end: '+=180%',
+      pin: true,
+      anticipatePin: 1,
+      scrub: 0.6,
+      onUpdate: (self) => {
+        sec.dataset.fxProgress = self.progress.toFixed(3);
+      },
+    });
+  });
+}
+
+// Parallax sutil para los videos de fondo: el frame se desplaza yPercent
+// mientras la sección entra y sale, igual que rockstargames.com/VI.
+function initVideoParallax() {
+  document.querySelectorAll<HTMLElement>('[data-parallax-video]').forEach((sec) => {
+    if (sec.dataset.vpParallaxBound) return;
+    sec.dataset.vpParallaxBound = '1';
+    const media = sec.querySelector<HTMLElement>('.vp-media, .hero-media');
+    if (!media) return;
+    gsap.fromTo(
+      media,
+      { yPercent: -8 },
+      {
+        yPercent: 8,
+        ease: 'none',
+        scrollTrigger: { trigger: sec, start: 'top bottom', end: 'bottom top', scrub: true },
+      },
+    );
+  });
+}
+
 function init() {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((el) => (el.style.opacity = '1'));
@@ -249,6 +291,8 @@ function init() {
   initReveal();
   initDrawLine();
   initCinematic();
+  initFormulaIntro();
+  initVideoParallax();
   bootCinematic();
 }
 
